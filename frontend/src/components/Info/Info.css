@@ -1,0 +1,174 @@
+/* info.css
+   Extra styles for the "How It Works" info section.
+   Relies on the design tokens already defined in Theme.css
+   (--primary, --secondary, --foreground, --muted-foreground,
+   --card, --border, --radius, --accent, etc.) */
+
+.hiw-section {
+  background: var(--secondary);
+  padding: 5rem 1.5rem;
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+.hiw-container {
+  max-width: 72rem;
+  margin: 0 auto;
+}
+
+/* Header */
+.hiw-header {
+  text-align: center;
+  margin-bottom: 3.5rem;
+}
+
+.hiw-eyebrow {
+  color: var(--primary);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+.hiw-title {
+  color: var(--foreground);
+  font-size: var(--text-3xl);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: 1rem;
+}
+
+.hiw-subtitle {
+  color: var(--muted-foreground);
+  font-size: var(--text-lg);
+  max-width: 36rem;
+  margin: 0 auto;
+}
+
+/* Grid */
+.hiw-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+@media (min-width: 640px) {
+  .hiw-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .hiw-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Card */
+.hiw-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.5rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 4px);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.hiw-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px -12px rgba(46, 125, 50, 0.25);
+  border-color: var(--primary);
+}
+
+.hiw-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.hiw-icon-wrap {
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius-md, calc(var(--radius) - 2px));
+  background: var(--secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.25s ease;
+}
+
+.hiw-card:hover .hiw-icon-wrap {
+  background: var(--primary);
+}
+
+.hiw-icon {
+  color: var(--primary);
+  transition: color 0.25s ease;
+}
+
+.hiw-card:hover .hiw-icon {
+  color: var(--primary-foreground);
+}
+
+.hiw-number {
+  color: var(--secondary);
+  -webkit-text-stroke: 1px var(--border);
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  line-height: 1;
+  user-select: none;
+}
+
+.hiw-card-title {
+  color: var(--foreground);
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: 0.5rem;
+}
+
+.hiw-card-desc {
+  color: var(--muted-foreground);
+  font-size: var(--text-base);
+  line-height: 1.6;
+}
+
+/* Connector chevron between cards (desktop only) */
+.hiw-connector {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  right: -1.65rem;
+  transform: translateY(-50%);
+  z-index: 10;
+  color: var(--border);
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+@media (min-width: 1024px) {
+  .hiw-connector {
+    display: flex;
+  }
+}
+
+/* Accent progress line under the eyebrow, using the accent color for a small
+   detail that ties back to the rest of the theme */
+.hiw-eyebrow::after {
+  content: "";
+  display: block;
+  width: 2.5rem;
+  height: 3px;
+  margin: 0.6rem auto 0;
+  background: var(--accent);
+  border-radius: 999px;
+}

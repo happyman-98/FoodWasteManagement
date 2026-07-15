@@ -1,0 +1,220 @@
+/* Uploads.css
+   Styles for the "Featured Donations" (Uploads) section.
+   Base tokens (--primary, --foreground, --muted-foreground, --card,
+   --border, --radius, etc.) come from Theme.css. */
+
+.up-section {
+  background: var(--secondary);
+  padding: 4rem 1.5rem;
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+.up-container {
+  max-width: 84rem;
+  margin: 0 auto;
+}
+
+/* Header */
+.up-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.up-eyebrow {
+  color: var(--primary);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.up-title {
+  color: var(--foreground);
+  font-size: var(--text-3xl);
+  font-weight: var(--font-weight-medium);
+}
+
+.up-view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--primary);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem 0;
+  white-space: nowrap;
+}
+
+.up-view-all svg {
+  transition: transform 0.2s ease;
+}
+
+.up-view-all:hover svg {
+  transform: translateX(3px);
+}
+
+/* Grid */
+.up-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.75rem;
+}
+
+@media (min-width: 640px) {
+  .up-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .up-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Card */
+.up-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 4px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.up-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 30px -16px rgba(46, 125, 50, 0.3);
+}
+
+.up-media {
+  position: relative;
+  height: 190px;
+  width: 100%;
+  overflow: hidden;
+  background: var(--muted);
+}
+
+.up-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.up-tag {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-medium);
+  color: #ffffff;
+  letter-spacing: 0.02em;
+}
+
+.up-tag--urgent { background: var(--destructive); }
+.up-tag--fresh { background: #2e9e4f; }
+.up-tag--new { background: #1565c0; }
+.up-tag--popular { background: var(--accent); }
+.up-tag--verified { background: #6a1b9a; }
+.up-tag--available { background: #00897b; }
+.up-tag--default { background: var(--primary); }
+
+.up-time {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--foreground);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(2px);
+}
+
+.up-body {
+  padding: 1.25rem 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.up-category {
+  color: var(--primary);
+  font-size: 0.8125rem;
+  font-weight: var(--font-weight-medium);
+  margin-bottom: 0.35rem;
+}
+
+.up-card-title {
+  color: var(--foreground);
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: 0.75rem;
+  line-height: 1.35;
+}
+
+.up-meta {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.up-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.up-btn {
+  margin-top: auto;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: var(--secondary);
+  color: var(--primary);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+.up-btn:hover {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.up-btn:active {
+  transform: scale(0.98);
+}
+
+.up-btn:disabled {
+  background: var(--muted);
+  color: var(--muted-foreground);
+  cursor: default;
+}
+
+.up-btn--done {
+  background: var(--muted);
+  color: var(--muted-foreground);
+}

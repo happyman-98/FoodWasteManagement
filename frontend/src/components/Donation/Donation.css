@@ -1,0 +1,144 @@
+/* Donation.css
+   Styles for the "Donation Categories" section.
+   Base tokens (--foreground, --muted-foreground, --radius, etc.) come
+   from Theme.css. Each category gets its own accent color, in the same
+   spirit as --chart-1..5, but this section calls for more hues than the
+   theme defines, so a small local palette is added here. */
+
+.don-section {
+  background: var(--background);
+  padding: 5rem 1.5rem;
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+.don-container {
+  max-width: 84rem;
+  margin: 0 auto;
+}
+
+/* Header */
+.don-header {
+  text-align: center;
+  margin-bottom: 3.5rem;
+}
+
+.don-eyebrow {
+  color: var(--primary);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+.don-title {
+  color: var(--foreground);
+  font-size: var(--text-3xl);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: 1rem;
+}
+
+.don-subtitle {
+  color: var(--muted-foreground);
+  font-size: var(--text-lg);
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
+/* Grid */
+.don-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .don-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .don-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+/* Card */
+.don-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2rem 1.25rem;
+  border-radius: calc(var(--radius) + 4px);
+  border: 1px solid var(--don-border);
+  background: var(--don-bg);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.don-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 26px -14px var(--don-border);
+}
+
+.don-icon-wrap {
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  color: var(--don-accent);
+}
+
+.don-card-title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-medium);
+  color: var(--don-accent);
+  margin-bottom: 0.35rem;
+}
+
+.don-card-count {
+  font-size: var(--text-base);
+  color: var(--don-accent);
+  opacity: 0.75;
+}
+
+/* Category color themes, applied via a modifier class on .don-card */
+.don-card--food {
+  --don-bg: #e8f5ea;
+  --don-border: rgba(46, 125, 50, 0.25);
+  --don-accent: #2e7d32;
+}
+
+.don-card--veg {
+  --don-bg: #f2f8e4;
+  --don-border: rgba(104, 159, 56, 0.25);
+  --don-accent: #558b2f;
+}
+
+.don-card--clothes {
+  --don-bg: #fdece3;
+  --don-border: rgba(230, 81, 0, 0.25);
+  --don-accent: #d84315;
+}
+
+.don-card--furniture {
+  --don-bg: #fdf3d8;
+  --don-border: rgba(191, 130, 0, 0.25);
+  --don-accent: #b06d00;
+}
+
+.don-card--books {
+  --don-bg: #e6efff;
+  --don-border: rgba(21, 101, 192, 0.25);
+  --don-accent: #1859c4;
+}
+
+.don-card--electronics {
+  --don-bg: #f3e8fd;
+  --don-border: rgba(106, 27, 154, 0.25);
+  --don-accent: #7b1fa2;
+}

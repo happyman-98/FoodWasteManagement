@@ -1,0 +1,97 @@
+/* Farmer.css — extra building blocks specific to the Farmer portal's
+   "My Listings" page (card-per-listing layout + inline edit row).
+   Builds on the shared tokens/classes in Theme.css and Dashboard.css. */
+
+.listing-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.listing-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.25rem;
+}
+
+.listing-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.listing-card-title {
+  font-weight: var(--font-weight-medium);
+  margin: 0 0 0.15rem;
+}
+
+.listing-card-sub {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted-foreground);
+}
+
+.listing-card-trailing {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  flex-shrink: 0;
+}
+
+.listing-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+/* ---------- Inline edit mode ---------- */
+
+.listing-edit-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 0.75rem;
+}
+
+@media (max-width: 720px) {
+  .listing-edit-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.listing-edit-grid input {
+  width: 100%;
+  border: 1px solid transparent;
+  background: var(--input-background);
+  border-radius: var(--radius-md);
+  padding: 0.55rem 0.75rem;
+  font-size: 0.9rem;
+  color: var(--foreground);
+  outline: none;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.listing-edit-grid input:focus {
+  border-color: var(--ring);
+}
+
+.listing-card-actions .icon-btn--confirm {
+  color: var(--primary);
+}
+
+/* ---------- Empty state ---------- */
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 3rem 1rem;
+  color: var(--muted-foreground);
+  text-align: center;
+}
