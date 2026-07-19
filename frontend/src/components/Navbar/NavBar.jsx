@@ -1,28 +1,15 @@
 import { useState, useRef, useEffect } from "react";
 import "./NavBar.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Leaf, Menu, X, ChevronDown, LayoutDashboard, UserRound, LogOut } from "lucide-react";
 import { ROLE_LABELS, getAvatarInfo } from "./authHelpers";
 
-/**
- * Navbar
- * ---------------------------------------------------------------------------
- * Presentational only — does not fetch or manage auth state.
- * See authHelpers.js for the full `user` data contract.
- *
- * Props:
- *   user          object|null   Logged-in account (see authHelpers.js), or
- *                                null when logged out. Default: null.
- *   isLoadingUser boolean       True while auth state is still resolving.
- *                                Default: false.
- *   onLogout      function     Called when "Logout" is clicked in the
- *                                dropdown. Should clear the session/token
- *                                and reset `user` to null. Default: no-op.
- */
+
 export default function Navbar({ user = null, isLoadingUser = false, onLogout = () => {} }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef(null);
+  const navigate = useNavigate();
 
   const navItems = [
     { to: "/", label: "Home" },
@@ -30,8 +17,6 @@ export default function Navbar({ user = null, isLoadingUser = false, onLogout = 
     { to: "/donate-items", label: "Donate Items" },
     { to: "/find-donations", label: "Find Donations" },
     { to: "/ngos", label: "NGOs" },
-    { to: "/about", label: "About" },
-    { to: "/contact", label: "Contact" },
   ];
 
   // Close the profile dropdown on outside click.
@@ -55,6 +40,12 @@ export default function Navbar({ user = null, isLoadingUser = false, onLogout = 
     onLogout();
   }
 
+  function handleNavClick(e, to) {
+    e.preventDefault();
+    setMenuOpen(false);
+    navigate("/login");
+  }
+
   return (
     <nav className="navbar">
       <div className="navbar-container">
@@ -73,7 +64,13 @@ export default function Navbar({ user = null, isLoadingUser = false, onLogout = 
         {/* Navigation */}
         <div className="nav-links">
           {navItems.map((item) => (
-            <Link key={item.to} to={item.to}>{item.label}</Link>
+            <Link
+              key={item.to}
+              to={item.to}
+              onClick={(e) => handleNavClick(e, item.to)}
+            >
+              {item.label}
+            </Link>
           ))}
         </div>
 
@@ -84,7 +81,7 @@ export default function Navbar({ user = null, isLoadingUser = false, onLogout = 
 
           {!isLoadingUser && !user && (
             <>
-              <Link to="/" className="login-btn">Login</Link>
+              <Link to="/login" className="login-btn">Login</Link>
               <Link to="/signup" className="signup-btn">Sign Up</Link>
             </>
           )}
@@ -151,7 +148,7 @@ export default function Navbar({ user = null, isLoadingUser = false, onLogout = 
             <Link
               key={item.to}
               to={item.to}
-              onClick={() => setMenuOpen(false)}
+              onClick={(e) => handleNavClick(e, item.to)}
             >
               {item.label}
             </Link>

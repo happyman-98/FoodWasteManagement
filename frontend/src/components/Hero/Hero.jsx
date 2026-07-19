@@ -1,7 +1,10 @@
 import { Leaf, ArrowRight, CheckCircle2, UtensilsCrossed } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import "./Hero.css";
 
 export default function Hero() {
+  const navigate = useNavigate();
+
   return (
     <section className="hero">
       <div className="hero-inner">
@@ -28,11 +31,13 @@ export default function Hero() {
           </p>
 
           <div className="hero-actions">
-            <button className="btn btn-primary">
+            <button className="btn btn-primary" onClick={() => navigate("/login")}>
               Donate Now
               <ArrowRight size={16} />
             </button>
-            <button className="btn btn-outline">Find Donations</button>
+            <button className="btn btn-outline" onClick={() => navigate("/login")}>
+              Find Donations
+            </button>
           </div>
 
           <div className="hero-donors">

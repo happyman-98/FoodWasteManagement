@@ -3,31 +3,7 @@ import { Eye, Trash2, Plus } from "lucide-react";
 import Sidebar from "../../components/SideBar/Sidebar";
 import "../../styles/Dashboard.css";
 
-/**
- * ---------------------------------------------------------------------------
- * BACKEND / API CONTRACT — Donation History (GET /api/restaurant/:id/donations)
- * ---------------------------------------------------------------------------
- * Suggested response shape:
- * {
- *   "restaurantName": "Spice Garden Restaurant",
- *   "donations": [
- *     {
- *       "id": "don_1001",                 // used as React key + for view/delete actions
- *       "itemName": "Dal & Rice",
- *       "quantityLabel": "40 pcs",
- *       "postedDate": "Jul 7",            // pre-formatted display string (format on backend or format client-side from an ISO date — either is fine, just be consistent)
- *       "claimedBy": "Seva NGO",           // null/"" if not yet claimed -> renders as "—"
- *       "status": "Active"                // one of: "Active" | "Picked Up" | "Delivered" | "Cancelled"
- *     }
- *   ]
- * }
- *
- * Actions:
- *  - `onViewDonation(id)`   — fires when the eye icon is clicked (open detail view/modal)
- *  - `onDeleteDonation(id)` — fires when the trash icon is clicked (should confirm, then DELETE /api/restaurant/donations/:id)
- *  - `onNewDonation()`      — fires when "+ New Donation" is clicked (typically routes to Upload Donation page)
- * ---------------------------------------------------------------------------
- */
+
 
 const MOCK_DONATIONS = [
   { id: "don_1", itemName: "Dal & Rice", quantityLabel: "40 pcs", postedDate: "Jul 7", claimedBy: "Seva NGO", status: "Active" },

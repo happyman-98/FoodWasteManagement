@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import {
   UserRound,
   UtensilsCrossed,
@@ -37,12 +38,22 @@ const roles = [
 ];
 
 export default function DashboardCard({ onSelectRole, onSelectAdmin }) {
+  const navigate = useNavigate();
+
   const handleSelect = (roleKey) => {
-    if (onSelectRole) onSelectRole(roleKey);
+    if (onSelectRole) {
+      onSelectRole(roleKey);
+    } else {
+      navigate("/login");
+    }
   };
 
   const handleAdmin = () => {
-    if (onSelectAdmin) onSelectAdmin();
+    if (onSelectAdmin) {
+      onSelectAdmin();
+    } else {
+      navigate("/login");
+    }
   };
 
   return (

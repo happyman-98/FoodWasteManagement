@@ -79,7 +79,7 @@ export default function Step1({
 
       <p className="signin-link">
         Already have an account?
-        <Link to="/"> Sign In</Link>
+        <Link to="/login"> Sign In</Link>
       </p>
     </>
   );

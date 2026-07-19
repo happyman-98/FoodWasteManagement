@@ -1,82 +1,136 @@
-import React, { useState } from "react";
-import { Building2 } from "lucide-react";
-import Sidebar from "../../components/SideBar/Sidebar";
-import "../../styles/Dashboard.css";
+import React, { useState } from 'react'
+import { Search, Pencil, Trash2, Check, X } from 'lucide-react'
+import Sidebar from '../../components/SideBar/Sidebar'
+import { useAdminUsers } from '../../hooks/useAdmin'
+import { useSidebarNavigation } from '../../hooks/useSidebarNavigation'
+import '../../styles/Dashboard.css'
 
-// Placeholder rows for GET /api/admin/restaurants — swap this mock
-// resolver for a real fetch() call. Shape: { id, name, location, status }.
-const MOCK_RESTAURANTS = [
-  { id: "r_1", name: "Spice Garden", location: "Kathmandu", status: "active" },
-  { id: "r_2", name: "Taj Hotel Group", location: "Lalitpur", status: "active" },
-  { id: "r_3", name: "Green Leaf Kitchen", location: "Bhaktapur", status: "inactive" },
-];
+function formatShortDate(iso) {
+  const d = new Date(iso)
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
 
-const TOTAL_RESTAURANTS_COUNT = 142; // from GET /api/admin/restaurants/count
+export default function Restaurants() {
+  const { activeKey, onNavigate, onLogout } = useSidebarNavigation('admin')
+  const { users, total, loading, error, query, setQuery, update, remove } = useAdminUsers({ role: 'restaurant' })
+  const [editingId, setEditingId] = useState(null)
+  const [editStatus, setEditStatus] = useState('')
 
-export default function Restaurants({ onNavigate = () => {}, onLogout = () => {} }) {
-  const [restaurants, setRestaurants] = useState(null); // null = not yet loaded
-  const [isLoading, setIsLoading] = useState(false);
+  const handleSearch = (e) => setQuery((q) => ({ ...q, q: e.target.value, page: 1 }))
 
-  function handleLoadRestaurants() {
-    setIsLoading(true);
-    // Replace with: const data = await fetch("/api/admin/restaurants").then(r => r.json());
-    setTimeout(() => {
-      setRestaurants(MOCK_RESTAURANTS);
-      setIsLoading(false);
-    }, 400);
+  const startEdit = (r) => {
+    setEditingId(r._id)
+    setEditStatus(r.status)
+  }
+
+  const saveEdit = async (id) => {
+    await update(id, { status: editStatus })
+    setEditingId(null)
+  }
+
+  const handleDelete = async (id, name) => {
+    if (!window.confirm(`Delete restaurant "${name}"? This also removes their donations and pickups.`)) return
+    await remove(id)
   }
 
   return (
-    <div className="dashboard-layout">
-      <Sidebar role="admin" activeKey="restaurants" onNavigate={onNavigate} onLogout={onLogout} />
+    <div className='dashboard-layout'>
+      <Sidebar role='admin' activeKey={activeKey} onNavigate={onNavigate} onLogout={onLogout} />
 
-      <main className="dashboard-main">
-        <div className="page-header">
+      <main className='dashboard-main'>
+        <div className='page-header'>
           <div>
             <h1>Restaurants</h1>
-            <p>Manage all registered restaurants on the platform.</p>
+            <p>{total} registered restaurants</p>
+          </div>
+          <div className='search-bar' style={{ maxWidth: 280 }}>
+            <Search size={16} />
+            <input
+              type='text'
+              placeholder='Search restaurants…'
+              value={query.q}
+              onChange={handleSearch}
+            />
           </div>
         </div>
 
-        {!restaurants ? (
-          <div className="empty-state-card">
-            <span className="empty-state-icon">
-              <Building2 size={30} />
-            </span>
-            <p className="empty-state-text">
-              Showing all verified restaurants — {TOTAL_RESTAURANTS_COUNT} total
-            </p>
-            <button className="empty-state-button" onClick={handleLoadRestaurants} disabled={isLoading}>
-              {isLoading ? "Loading..." : "Load Restaurants List"}
-            </button>
-          </div>
-        ) : (
-          <div className="panel" style={{ padding: "1.5rem" }}>
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Restaurant</th>
-                  <th>Location</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {restaurants.map((restaurant) => (
-                  <tr key={restaurant.id}>
-                    <td>{restaurant.name}</td>
-                    <td>{restaurant.location}</td>
-                    <td>
-                      <span className={`badge badge--${restaurant.status}`}>
-                        {restaurant.status === "active" ? "Active" : "Inactive"}
+        {error && <p style={{ color: 'var(--text-danger)' }}>{error}</p>}
+
+        <div className='panel' style={{ padding: '1.5rem' }}>
+          <table className='data-table'>
+            <thead>
+              <tr>
+                <th>Restaurant</th>
+                <th>FSSAI No.</th>
+                <th>City</th>
+                <th>Joined</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading && (
+                <tr><td colSpan={6} style={{ textAlign: 'center', padding: '2rem 0' }}>Loading…</td></tr>
+              )}
+              {!loading && users.map((r) => (
+                <tr key={r._id}>
+                  <td>
+                    <div className='data-table-user-cell'>
+                      {r.avatar
+                        ? <img className='data-table-avatar' src={r.avatar} alt={r.name} />
+                        : <span className='data-table-avatar' style={{ background: 'var(--surface-1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12 }}>{r.name[0]}</span>
+                      }
+                      <div>
+                        <div>{r.name}</div>
+                        <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{r.email}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>{r.licenseNumber ?? '—'}</td>
+                  <td>{r.city || '—'}</td>
+                  <td>{formatShortDate(r.createdAt)}</td>
+                  <td>
+                    {editingId === r._id ? (
+                      <select value={editStatus} onChange={(e) => setEditStatus(e.target.value)} style={{ fontSize: 13 }}>
+                        <option value='Active'>Active</option>
+                        <option value='Inactive'>Inactive</option>
+                      </select>
+                    ) : (
+                      <span className={`badge badge--${r.status === 'Active' ? 'active' : 'inactive'}`}>
+                        {r.status}
                       </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                    )}
+                  </td>
+                  <td>
+                    {editingId === r._id ? (
+                      <div className='table-actions'>
+                        <button className='icon-btn icon-btn--confirm' onClick={() => saveEdit(r._id)}><Check size={15} /></button>
+                        <button className='icon-btn' onClick={() => setEditingId(null)}><X size={15} /></button>
+                      </div>
+                    ) : (
+                      <div className='table-actions'>
+                        <button className='icon-btn' title='Edit status' onClick={() => startEdit(r)}><Pencil size={15} /></button>
+                        <button className='icon-btn icon-btn--danger' title='Delete' onClick={() => handleDelete(r._id, r.name)}><Trash2 size={15} /></button>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))}
+              {!loading && users.length === 0 && (
+                <tr><td colSpan={6} style={{ textAlign: 'center', padding: '2rem 0', color: 'var(--text-secondary)' }}>No restaurants found.</td></tr>
+              )}
+            </tbody>
+          </table>
+
+          {total > query.limit && (
+            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
+              <button className='icon-btn' disabled={query.page === 1} onClick={() => setQuery((q) => ({ ...q, page: q.page - 1 }))}>←</button>
+              <span style={{ fontSize: 13, color: 'var(--text-secondary)', alignSelf: 'center' }}>Page {query.page}</span>
+              <button className='icon-btn' disabled={query.page * query.limit >= total} onClick={() => setQuery((q) => ({ ...q, page: q.page + 1 }))}>→</button>
+            </div>
+          )}
+        </div>
       </main>
     </div>
-  );
+  )
 }

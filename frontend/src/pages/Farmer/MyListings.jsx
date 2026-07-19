@@ -4,39 +4,7 @@ import Sidebar from "../../components/SideBar/Sidebar";
 import "../../styles/Dashboard.css";
 import "../../styles/Farmer.css";
 
-/**
- * ---------------------------------------------------------------------------
- * BACKEND / API CONTRACT — My Listings (GET /api/farmer/:id/listings)
- * ---------------------------------------------------------------------------
- * {
- *   "farmName": "Green Acres Farm",
- *   "listings": [
- *     {
- *       "id": "lst_1",
- *       "name": "Tomatoes",
- *       "quantityLabel": "120 kg",
- *       "availableLabel": "Available Jul 8",
- *       "status": "Active",           // "Active" | "Picked Up" | "Delivered" | "Cancelled"
- *       "imageUrl": "https://..."
- *     }
- *   ]
- * }
- *
- * This component keeps its own local copy of `listings` (seeded from the
- * prop) so edit/delete feel instant in the UI — that's standard optimistic
- * UI. On every edit/delete it ALSO calls the matching callback prop so the
- * real request can be fired from the parent:
- *
- *   - onDeleteListing(id)                       -> DELETE /api/farmer/listings/:id
- *   - onUpdateListing(id, { name, quantityLabel, availableLabel })
- *                                                -> PATCH  /api/farmer/listings/:id
- *   - onNewListing()                            -> typically routes to Upload Harvest
- *
- * If the parent's real request fails, re-pass the previous `listings` prop
- * down (this component re-syncs from props whenever that prop changes) to
- * roll back the optimistic update.
- * ---------------------------------------------------------------------------
- */
+
 
 const MOCK_LISTINGS = [
   { id: "lst_1", name: "Tomatoes", quantityLabel: "120 kg", availableLabel: "Available Jul 8", status: "Active", imageUrl: "https://images.unsplash.com/photo-1546470427-e26264be0b0d?w=100&h=100&fit=crop" },

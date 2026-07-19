@@ -1,23 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "../../components/SideBar/Sidebar";
 import "../../styles/Dashboard.css";
-import "../../styles/Forms.css";
+import "../../styles/Farmer.css";
 
-/**
- * ---------------------------------------------------------------------------
- * BACKEND / API CONTRACT — Farmer Settings
- * ---------------------------------------------------------------------------
- * Fetch on mount:  GET /api/farmer/:id/profile
- * Save on submit:  PUT /api/farmer/:id/profile
- *
- * Profile shape (used for both the GET response and the PUT payload):
- * {
- *   "farmName": "Green Acres Farm",
- *   "contactNumber": "+91 98765 22222",
- *   "farmAddress": "Survey No. 42, Whitefield Road, Bangalore 560066"
- * }
- * ---------------------------------------------------------------------------
- */
 
 const DEFAULT_PROFILE = {
   farmName: "Green Acres Farm",

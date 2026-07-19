@@ -3,33 +3,7 @@ import { Sprout, Activity, Heart, CheckCircle2 } from "lucide-react";
 import Sidebar from "../../components/SideBar/Sidebar";
 import "../../styles/Dashboard.css";
 
-/**
- * ---------------------------------------------------------------------------
- * BACKEND / API CONTRACT — Farmer Overview (GET /api/farmer/:id/overview)
- * ---------------------------------------------------------------------------
- * {
- *   "farmName": "Green Acres Farm",
- *   "location": "Whitefield, Bangalore",
- *   "isVerified": true,
- *   "stats": {
- *     "totalProduceDonated": "4.2 tons",   // pre-formatted string (unit varies: kg/tons)
- *     "activeListings": 3,
- *     "familiesFed": 1840,
- *     "pickupSuccessRatePct": 97
- *   },
- *   "recentListings": [                     // top N, most recent first
- *     {
- *       "id": "lst_1",
- *       "name": "Tomatoes",
- *       "quantityLabel": "120 kg",
- *       "availableLabel": "Available Jul 8",
- *       "status": "Active",                 // "Active" | "Picked Up" | "Delivered" | "Cancelled"
- *       "imageUrl": "https://..."
- *     }
- *   ]
- * }
- * ---------------------------------------------------------------------------
- */
+
 
 const STAT_DISPLAY_CONFIG = {
   totalProduceDonated: { icon: Sprout, variant: "green", label: "Total Produce Donated" },

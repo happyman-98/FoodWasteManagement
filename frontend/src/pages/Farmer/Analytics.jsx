@@ -4,22 +4,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import Sidebar from "../../components/SideBar/Sidebar";
 import "../../styles/Dashboard.css";
 
-/**
- * ---------------------------------------------------------------------------
- * BACKEND / API CONTRACT — Farmer Analytics (GET /api/farmer/:id/analytics)
- * ---------------------------------------------------------------------------
- * {
- *   "totalDonatedLabel": "4.2 tons",     // pre-formatted (unit varies: kg/tons)
- *   "pickupsDone": 38,
- *   "ngosServed": 9,
- *   "familiesFed": 1840,
- *   "donationsOverTimeKg": [             // one point per month
- *     { "month": "Feb", "kg": 480 },
- *     { "month": "Mar", "kg": 660 }
- *   ]
- * }
- * ---------------------------------------------------------------------------
- */
+
 
 const MOCK_STATS = [
   { key: "totalDonated", icon: Sprout, variant: "green", value: "4.2 tons", label: "Total Donated" },

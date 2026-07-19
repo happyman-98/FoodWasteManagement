@@ -4,27 +4,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import Sidebar from "../../components/SideBar/Sidebar";
 import "../../styles/Dashboard.css";
 
-/**
- * ---------------------------------------------------------------------------
- * BACKEND / API CONTRACT — Analytics (GET /api/restaurant/:id/analytics)
- * ---------------------------------------------------------------------------
- * Suggested response shape:
- * {
- *   "totalMeals": 3420,
- *   "avgMealsPerWeek": 214,
- *   "ngosReached": 24,
- *   "co2SavedKg": 820,
- *   "donationsOverTime": [                // one point per month, same shape as Overview's chart
- *     { "month": "Feb", "meals": 480 },
- *     { "month": "Mar", "meals": 640 }
- *   ]
- * }
- *
- * `donationsOverTime` can be re-used from the same source that powers the
- * Overview page's "Monthly Food Donations" chart — this page just shows a
- * larger version of it with a longer time range if desired.
- * ---------------------------------------------------------------------------
- */
+
 
 const MOCK_STATS = [
   { key: "totalMeals", icon: UtensilsCrossed, variant: "green", value: "3,420", label: "Total Meals" },
@@ -90,7 +70,7 @@ export default function Analytics({
                     <XAxis dataKey="month" tickLine={false} axisLine={false} tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} />
                     <YAxis tickLine={false} axisLine={false} tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} />
                     <Tooltip />
-                    <Line type="monotone" dataKey="meals" stroke="var(--chart-1)" strokeWidth={2.5} dot={false} />
+<Line type="monotone" dataKey="kg" stroke="var(--chart-1)" strokeWidth={2.5} dot={false} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>

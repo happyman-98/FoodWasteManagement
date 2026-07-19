@@ -1,4 +1,6 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import {
   UtensilsCrossed,
   Wheat,
@@ -55,6 +57,20 @@ const categories = [
 ];
 
 export default function Donation() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const handleRequestDonation = (categoryKey) => {
+    if (!user) {
+      // No account yet — send them to login (which links to Sign Up too)
+      navigate("/login");
+      return;
+    }
+
+    // Logged in — proceed with the actual request flow
+    navigate(`/doner/donations/${categoryKey}`);
+  };
+
   return (
     <section className="don-section">
       <div className="don-container">
@@ -77,6 +93,13 @@ export default function Donation() {
                 </div>
                 <h3 className="don-card-title">{cat.title}</h3>
                 <p className="don-card-count">{cat.count}</p>
+                <button
+                  type="button"
+                  className="don-card-btn"
+                  onClick={() => handleRequestDonation(cat.key)}
+                >
+                  Request Donation
+                </button>
               </div>
             );
           })}

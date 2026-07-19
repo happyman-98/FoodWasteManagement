@@ -1,25 +1,37 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Package, MapPin, Clock, ArrowRight } from "lucide-react";
-import { donations, formatTimeLeft, tagClass } from "./uploadsData";
+import { getFeaturedDonations } from "../../api/donations";
+import { formatTimeLeft, tagClass } from "./uploadsData";
 import "./Uploads.css";
 
-function DonationCard({ donation, requested, onRequest }) {
-  const [timeLeft, setTimeLeft] = useState(() =>
-    formatTimeLeft(donation.claimBy())
+// Neutral inline placeholder — used when a donation has no photos yet,
+// so we don't depend on an external image URL that could break.
+const FALLBACK_IMAGE =
+  "data:image/svg+xml;utf8," +
+  encodeURIComponent(
+    `<svg xmlns='http://www.w3.org/2000/svg' width='600' height='400'>
+      <rect width='100%' height='100%' fill='#e5e7eb'/>
+      <text x='50%' y='50%' font-family='sans-serif' font-size='20' fill='#9ca3af' text-anchor='middle' dy='.3em'>No photo available</text>
+    </svg>`
   );
+
+function DonationCard({ donation, requested, onRequest }) {
+  const [timeLeft, setTimeLeft] = useState(() => formatTimeLeft(donation.expiresAt));
 
   // Keep the "time left" label live without needing a page refresh.
   useEffect(() => {
     const id = setInterval(() => {
-      setTimeLeft(formatTimeLeft(donation.claimBy()));
+      setTimeLeft(formatTimeLeft(donation.expiresAt));
     }, 60000);
     return () => clearInterval(id);
-  }, [donation]);
+  }, [donation.expiresAt]);
+
+  const cover = donation.image?.[0] || FALLBACK_IMAGE;
 
   return (
     <div className="up-card">
       <div className="up-media">
-        <img src={donation.image} alt={donation.title} loading="lazy" />
+        <img src={cover} alt={donation.title} loading="lazy" />
         <span className={`up-tag ${tagClass(donation.tag)}`}>
           {donation.tag}
         </span>
@@ -48,7 +60,7 @@ function DonationCard({ donation, requested, onRequest }) {
           type="button"
           className={`up-btn ${requested ? "up-btn--done" : ""}`}
           disabled={requested}
-          onClick={() => onRequest(donation.id)}
+          onClick={() => onRequest(donation._id)}
         >
           {requested ? "Requested" : "Request Donation"}
         </button>
@@ -58,11 +70,22 @@ function DonationCard({ donation, requested, onRequest }) {
 }
 
 export default function Uploads({ onViewAll }) {
+  const [donations, setDonations] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [requestedIds, setRequestedIds] = useState({});
+
+  useEffect(() => {
+    getFeaturedDonations(8)
+      .then((res) => setDonations(res.data?.donations || []))
+      .catch(() => setDonations([])) // fail quietly on a public marketing page
+      .finally(() => setLoading(false));
+  }, []);
 
   const handleRequest = useCallback((id) => {
     setRequestedIds((prev) => ({ ...prev, [id]: true }));
   }, []);
+
+  if (!loading && donations.length === 0) return null;
 
   return (
     <section className="up-section">
@@ -78,16 +101,20 @@ export default function Uploads({ onViewAll }) {
           </button>
         </div>
 
-        <div className="up-grid">
-          {donations.map((donation) => (
-            <DonationCard
-              key={donation.id}
-              donation={donation}
-              requested={!!requestedIds[donation.id]}
-              onRequest={handleRequest}
-            />
-          ))}
-        </div>
+        {loading ? (
+          <p style={{ textAlign: "center", padding: "2rem 0" }}>Loading donations…</p>
+        ) : (
+          <div className="up-grid">
+            {donations.map((donation) => (
+              <DonationCard
+                key={donation._id}
+                donation={donation}
+                requested={!!requestedIds[donation._id]}
+                onRequest={handleRequest}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

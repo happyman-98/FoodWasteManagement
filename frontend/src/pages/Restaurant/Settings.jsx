@@ -1,127 +1,99 @@
-import React from "react";
-import { Eye, Trash2, Plus } from "lucide-react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "../../components/SideBar/Sidebar";
 import "../../styles/Dashboard.css";
 
-/**
- * ---------------------------------------------------------------------------
- * BACKEND / API CONTRACT — Donation History (GET /api/restaurant/:id/donations)
- * ---------------------------------------------------------------------------
- * Suggested response shape:
- * {
- *   "restaurantName": "Spice Garden Restaurant",
- *   "donations": [
- *     {
- *       "id": "don_1001",                 // used as React key + for view/delete actions
- *       "itemName": "Dal & Rice",
- *       "quantityLabel": "40 pcs",
- *       "postedDate": "Jul 7",            // pre-formatted display string (format on backend or format client-side from an ISO date — either is fine, just be consistent)
- *       "claimedBy": "Seva NGO",           // null/"" if not yet claimed -> renders as "—"
- *       "status": "Active"                // one of: "Active" | "Picked Up" | "Delivered" | "Cancelled"
- *     }
- *   ]
- * }
- *
- * Actions:
- *  - `onViewDonation(id)`   — fires when the eye icon is clicked (open detail view/modal)
- *  - `onDeleteDonation(id)` — fires when the trash icon is clicked (should confirm, then DELETE /api/restaurant/donations/:id)
- *  - `onNewDonation()`      — fires when "+ New Donation" is clicked (typically routes to Upload Donation page)
- * ---------------------------------------------------------------------------
- */
-
-const MOCK_DONATIONS = [
-  { id: "don_1", itemName: "Dal & Rice", quantityLabel: "40 pcs", postedDate: "Jul 7", claimedBy: "Seva NGO", status: "Active" },
-  { id: "don_2", itemName: "Sambar & Idli", quantityLabel: "25 pcs", postedDate: "Jul 5", claimedBy: "Helping Hands", status: "Picked Up" },
-  { id: "don_3", itemName: "Chapati & Sabzi", quantityLabel: "30 pcs", postedDate: "Jul 3", claimedBy: "Bal Bhavan", status: "Delivered" },
-  { id: "don_4", itemName: "Veg Biryani", quantityLabel: "50 pcs", postedDate: "Jul 1", claimedBy: "Seva NGO", status: "Delivered" },
-  { id: "don_5", itemName: "Paneer Curry", quantityLabel: "20 pcs", postedDate: "Jun 28", claimedBy: null, status: "Cancelled" },
-];
-
-function badgeClass(status) {
-  if (status === "Delivered" || status === "Active") return "badge badge--delivered";
-  if (status === "Picked Up") return "badge badge--picked-up";
-  if (status === "Cancelled") return "badge badge--cancelled";
-  return "badge";
-}
-
-export default function DonationHistory({
-  restaurantName = "Spice Garden Restaurant",
-  donations = MOCK_DONATIONS,
-  isLoading = false,
+export default function RestaurantSettings({
+  profile = {},
+  saving = false,
+  onSave = async () => {},
   onNavigate = () => {},
   onLogout = () => {},
-  onNewDonation = () => {},
-  onViewDonation = () => {},
-  onDeleteDonation = () => {},
 }) {
+  const [form, setForm] = useState({
+    name: "",
+    licenseNumber: "",
+    phone: "",
+    city: "",
+  });
+
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  useEffect(() => {
+    setForm({
+      name: profile?.name || "",
+      licenseNumber: profile?.licenseNumber || "",
+      phone: profile?.phone || "",
+      city: profile?.city || "",
+    });
+  }, [profile]);
+
+  const handleChange = (field) => (e) =>
+    setForm((prev) => ({ ...prev, [field]: e.target.value }));
+
+  const handleSave = async () => {
+    setError("");
+    setSuccess("");
+    try {
+      await onSave({ name: form.name, phone: form.phone, city: form.city });
+      setSuccess("Profile saved successfully!");
+    } catch (err) {
+      setError(err?.response?.data?.message || "Failed to save profile.");
+    }
+  };
+
   return (
     <div className="dashboard-layout">
-      <Sidebar role="restaurant" activeKey="donation-history" onNavigate={onNavigate} onLogout={onLogout} />
+      <Sidebar role="restaurant" activeKey="settings" onNavigate={onNavigate} onLogout={onLogout} />
 
       <main className="dashboard-main">
         <div className="page-header">
           <div>
-            <h1>Donation History</h1>
-            <p>All food donations posted by {restaurantName}.</p>
+            <h1>Settings</h1>
+            <p>Manage your restaurant profile and notification preferences.</p>
           </div>
-          <button className="page-header-action" onClick={onNewDonation}>
-            <Plus size={16} />
-            New Donation
-          </button>
         </div>
 
-        <div className="panel">
-          {isLoading ? (
-            <p className="muted-text">Loading donation history…</p>
-          ) : donations.length === 0 ? (
-            <p className="muted-text">No donations posted yet.</p>
-          ) : (
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>Item</th>
-                  <th>Qty</th>
-                  <th>Posted</th>
-                  <th>Claimed By</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {donations.map((donation) => (
-                  <tr key={donation.id}>
-                    <td>{donation.itemName}</td>
-                    <td>{donation.quantityLabel}</td>
-                    <td>{donation.postedDate}</td>
-                    <td>{donation.claimedBy || "—"}</td>
-                    <td>
-                      <span className={badgeClass(donation.status)}>{donation.status}</span>
-                    </td>
-                    <td>
-                      <div className="table-actions">
-                        <button
-                          type="button"
-                          className="icon-btn"
-                          aria-label={`View ${donation.itemName}`}
-                          onClick={() => onViewDonation(donation.id)}
-                        >
-                          <Eye size={17} />
-                        </button>
-                        <button
-                          type="button"
-                          className="icon-btn icon-btn--danger"
-                          aria-label={`Delete ${donation.itemName}`}
-                          onClick={() => onDeleteDonation(donation.id)}
-                        >
-                          <Trash2 size={17} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+        <div className="settings-card">
+          <h3 style={{ margin: "0 0 1.25rem" }}>Restaurant Profile</h3>
+
+          {error && <p className="form-error">{error}</p>}
+          {success && <p className="form-success">{success}</p>}
+
+          <div className="settings-grid">
+            <div className="form-field">
+              <label>Restaurant Name</label>
+              <input
+                type="text"
+                className="form-input"
+                value={form.name}
+                onChange={handleChange("name")}
+              />
+            </div>
+            <div className="form-field">
+              <label>License No.</label>
+              <input
+                type="text"
+                className="form-input form-input--disabled"
+                value={form.licenseNumber}
+                disabled
+              />
+            </div>
+          </div>
+
+          <div className="form-field" style={{ marginBottom: "1rem" }}>
+            <label>Phone</label>
+            <input type="tel" className="form-input" value={form.phone} onChange={handleChange("phone")} />
+          </div>
+
+          <div className="form-field" style={{ marginBottom: "1.5rem" }}>
+            <label>City / Address</label>
+            <input type="text" className="form-input" value={form.city} onChange={handleChange("city")} />
+          </div>
+
+          <button className="settings-submit-btn" onClick={handleSave} disabled={saving}>
+            {saving ? "Saving..." : "Save Profile"}
+          </button>
         </div>
       </main>
     </div>

@@ -1,72 +1,63 @@
-import React, { useMemo, useState } from "react";
-import { Search, Eye, Pencil, Trash2 } from "lucide-react";
-import Sidebar from "../../components/SideBar/Sidebar";
-import "../../styles/Dashboard.css";
+import React, { useState } from 'react'
+import { Search, Pencil, Trash2, Check, X } from 'lucide-react'
+import Sidebar from '../../components/SideBar/Sidebar'
+import { useAdminUsers } from '../../hooks/useAdmin'
+import { useSidebarNavigation } from '../../hooks/useSidebarNavigation'
+import '../../styles/Dashboard.css'
 
-/**
- * Mirrors GET /api/admin/users
- * `status` stays a plain enum ("active" | "inactive") — the badge label
- * and color are decided in this file, not by the API.
- */
-const USERS = [
-  { userId: "u_1007", fullName: "Sunita Rao", avatarUrl: "/avatars/sunita-rao.jpg", role: "Restaurant", joinedAt: "2026-07-07", status: "active" },
-  { userId: "u_1006", fullName: "Arvind Patel", avatarUrl: "/avatars/arvind-patel.jpg", role: "Farmer", joinedAt: "2026-07-06", status: "active" },
-  { userId: "u_1005", fullName: "Meena Joshi", avatarUrl: "/avatars/meena-joshi.jpg", role: "NGO", joinedAt: "2026-07-05", status: "active" },
-  { userId: "u_1004", fullName: "Kiran Kumar", avatarUrl: "/avatars/kiran-kumar.jpg", role: "Donor", joinedAt: "2026-07-04", status: "inactive" },
-  { userId: "u_1003", fullName: "Priya Sharma", avatarUrl: "/avatars/priya-sharma.jpg", role: "Donor", joinedAt: "2026-07-03", status: "active" },
-  { userId: "u_1002", fullName: "Suresh Nair", avatarUrl: "/avatars/suresh-nair.jpg", role: "Restaurant", joinedAt: "2026-07-02", status: "active" },
-];
-
-function formatShortDate(isoDate) {
-  const [, month, day] = isoDate.split("-");
-  const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  return `${MONTHS[parseInt(month, 10) - 1]} ${parseInt(day, 10)}`;
+function formatShortDate(iso) {
+  const d = new Date(iso)
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
-export default function Users({
-  onNavigate = () => {},
-  onLogout = () => {},
-  onViewUser = () => {},
-  onEditUser = () => {},
-  onDeleteUser = () => {},
-}) {
-  const [searchQuery, setSearchQuery] = useState("");
+export default function Users() {
+  const { activeKey, onNavigate, onLogout } = useSidebarNavigation('admin')
+  const { users, total, loading, error, query, setQuery, update, remove } = useAdminUsers()
+  const [editingId, setEditingId] = useState(null)
+  const [editStatus, setEditStatus] = useState('')
 
-  // Client-side filter for now — swap for a debounced call to
-  // GET /api/admin/users?q=<searchQuery> once the list grows past a page.
-  const filteredUsers = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
-    if (!query) return USERS;
-    return USERS.filter(
-      (user) =>
-        user.fullName.toLowerCase().includes(query) ||
-        user.role.toLowerCase().includes(query)
-    );
-  }, [searchQuery]);
+  const handleSearch = (e) => setQuery((q) => ({ ...q, q: e.target.value, page: 1 }))
+
+  const startEdit = (user) => {
+    setEditingId(user._id)
+    setEditStatus(user.status)
+  }
+
+  const saveEdit = async (id) => {
+    await update(id, { status: editStatus })
+    setEditingId(null)
+  }
+
+  const handleDelete = async (id, name) => {
+    if (!window.confirm(`Delete user "${name}"? This also removes their donations and pickups.`)) return
+    await remove(id)
+  }
 
   return (
-    <div className="dashboard-layout">
-      <Sidebar role="admin" activeKey="users" onNavigate={onNavigate} onLogout={onLogout} />
+    <div className='dashboard-layout'>
+      <Sidebar role='admin' activeKey={activeKey} onNavigate={onNavigate} onLogout={onLogout} />
 
-      <main className="dashboard-main">
-        <div className="page-header">
+      <main className='dashboard-main'>
+        <div className='page-header'>
           <div>
             <h1>Users</h1>
-            <p>Manage all registered platform users.</p>
+            <p>{total} registered users</p>
           </div>
-          <div className="search-bar" style={{ maxWidth: 280 }}>
+          <div className='search-bar' style={{ maxWidth: 280 }}>
             <Search size={16} />
             <input
-              type="text"
-              placeholder="Search users..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              type='text'
+              placeholder='Search users…'
+              value={query.q}
+              onChange={handleSearch}
             />
           </div>
         </div>
 
-        <div className="panel" style={{ padding: "1.5rem" }}>
-          <table className="data-table">
+        {error && <p style={{ color: 'var(--text-danger)' }}>{error}</p>}
+
+        <div className='panel' style={{ padding: '1.5rem' }}>
+          <table className='data-table'>
             <thead>
               <tr>
                 <th>User</th>
@@ -77,52 +68,67 @@ export default function Users({
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.map((user) => (
-                <tr key={user.userId}>
+              {loading && (
+                <tr><td colSpan={5} style={{ textAlign: 'center', padding: '2rem 0' }}>Loading…</td></tr>
+              )}
+              {!loading && users.map((user) => (
+                <tr key={user._id}>
                   <td>
-                    <div className="data-table-user-cell">
-                      <img className="data-table-avatar" src={user.avatarUrl} alt={user.fullName} />
-                      {user.fullName}
+                    <div className='data-table-user-cell'>
+                      {user.avatar
+                        ? <img className='data-table-avatar' src={user.avatar} alt={user.name} />
+                        : <span className='data-table-avatar' style={{ background: 'var(--surface-1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12 }}>{user.name[0]}</span>
+                      }
+                      <div>
+                        <div>{user.name}</div>
+                        <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{user.email}</div>
+                      </div>
                     </div>
                   </td>
-                  <td>{user.role}</td>
-                  <td>{formatShortDate(user.joinedAt)}</td>
+                  <td style={{ textTransform: 'capitalize' }}>{user.role}</td>
+                  <td>{formatShortDate(user.createdAt)}</td>
                   <td>
-                    <span className={`badge badge--${user.status}`}>
-                      {user.status === "active" ? "Active" : "Inactive"}
-                    </span>
+                    {editingId === user._id ? (
+                      <select value={editStatus} onChange={(e) => setEditStatus(e.target.value)} style={{ fontSize: 13 }}>
+                        <option value='Active'>Active</option>
+                        <option value='Inactive'>Inactive</option>
+                      </select>
+                    ) : (
+                      <span className={`badge badge--${user.status === 'Active' ? 'active' : 'inactive'}`}>
+                        {user.status}
+                      </span>
+                    )}
                   </td>
                   <td>
-                    <div className="table-actions">
-                      <button className="icon-btn" title="View" onClick={() => onViewUser(user.userId)}>
-                        <Eye size={16} />
-                      </button>
-                      <button className="icon-btn" title="Edit" onClick={() => onEditUser(user.userId)}>
-                        <Pencil size={16} />
-                      </button>
-                      <button
-                        className="icon-btn icon-btn--danger"
-                        title="Delete"
-                        onClick={() => onDeleteUser(user.userId)}
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
+                    {editingId === user._id ? (
+                      <div className='table-actions'>
+                        <button className='icon-btn icon-btn--confirm' onClick={() => saveEdit(user._id)}><Check size={15} /></button>
+                        <button className='icon-btn' onClick={() => setEditingId(null)}><X size={15} /></button>
+                      </div>
+                    ) : (
+                      <div className='table-actions'>
+                        <button className='icon-btn' title='Edit status' onClick={() => startEdit(user)}><Pencil size={15} /></button>
+                        <button className='icon-btn icon-btn--danger' title='Delete' onClick={() => handleDelete(user._id, user.name)}><Trash2 size={15} /></button>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}
-
-              {filteredUsers.length === 0 && (
-                <tr>
-                  <td colSpan={5} style={{ textAlign: "center", color: "var(--muted-foreground)", padding: "2rem 0" }}>
-                    No users match "{searchQuery}".
-                  </td>
-                </tr>
+              {!loading && users.length === 0 && (
+                <tr><td colSpan={5} style={{ textAlign: 'center', padding: '2rem 0', color: 'var(--text-secondary)' }}>No users found.</td></tr>
               )}
             </tbody>
           </table>
+
+          {total > query.limit && (
+            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: '1rem' }}>
+              <button className='icon-btn' disabled={query.page === 1} onClick={() => setQuery((q) => ({ ...q, page: q.page - 1 }))}>←</button>
+              <span style={{ fontSize: 13, color: 'var(--text-secondary)', alignSelf: 'center' }}>Page {query.page}</span>
+              <button className='icon-btn' disabled={query.page * query.limit >= total} onClick={() => setQuery((q) => ({ ...q, page: q.page + 1 }))}>→</button>
+            </div>
+          )}
         </div>
       </main>
     </div>
-  );
+  )
 }

@@ -1,68 +1,27 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { CheckCircle2, Bell, Heart, AlertCircle, Users } from "lucide-react";
 import Sidebar from "../../components/SideBar/Sidebar";
+import { useAuth } from "../../context/AuthContext";
 import "../../styles/Dashboard.css";
 import "../../styles/DonorPages.css";
 
-const INITIAL_NOTIFICATIONS = [
-  {
-    id: 1,
-    icon: CheckCircle2,
-    iconBg: "#dcf3de",
-    iconColor: "#2e7d32",
-    text: "Your food donation 'Biryani & Curry' was picked up by Seva NGO.",
-    time: "2 hours ago",
-    unread: true,
-  },
-  {
-    id: 2,
-    icon: Bell,
-    iconBg: "#dbe9fb",
-    iconColor: "#1565c0",
-    text: "New pickup request from Helping Hands Trust for your vegetable listing.",
-    time: "5 hours ago",
-    unread: true,
-  },
-  {
-    id: 3,
-    icon: Heart,
-    iconBg: "#fbe7d4",
-    iconColor: "#e65100",
-    text: "You helped 12 families this week. Your donations made a real difference!",
-    time: "1 day ago",
-    unread: true,
-  },
-  {
-    id: 4,
-    icon: AlertCircle,
-    iconBg: "#fdf1cf",
-    iconColor: "#a37a12",
-    text: "Donation #D2371 (Engineering Books) expires in 24 hours. Consider extending or closing it.",
-    time: "2 days ago",
-    unread: false,
-  },
-  {
-    id: 5,
-    icon: CheckCircle2,
-    iconBg: "#dcf3de",
-    iconColor: "#2e7d32",
-    text: "Your item donation 'Winter Jackets' was successfully delivered to Bal Bhavan NGO.",
-    time: "3 days ago",
-    unread: false,
-  },
-  {
-    id: 6,
-    icon: Users,
-    iconBg: "#ece4fb",
-    iconColor: "#6a1b9a",
-    text: "Kavitha Reddy (NGO) saved your listing 'Organic Spinach 15kg'.",
-    time: "4 days ago",
-    unread: false,
-  },
-];
+export default function Notifications() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
-export default function Notifications({ onNavigate = () => {}, onLogout = () => {} }) {
-  const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS);
+  const onNavigate = (key) => navigate(`/doner/${key}`);
+  const onLogout = async () => { await logout(); navigate("/login"); };
+
+  const INITIAL = [
+    { id: 1, icon: CheckCircle2, iconBg: "#dcf3de", iconColor: "#2e7d32", text: `Welcome to ShareCycle, ${user?.name?.split(" ")[0] || "there"}! Start making a difference.`, time: "Just now", unread: true },
+    { id: 2, icon: Bell,         iconBg: "#dbe9fb", iconColor: "#1565c0", text: "Complete your profile to get more visibility for your donations.",                            time: "1 hour ago",   unread: true  },
+    { id: 3, icon: Heart,        iconBg: "#fbe7d4", iconColor: "#e65100", text: "Tip: Donations tagged 'Urgent' get picked up 3x faster!",                                    time: "1 day ago",    unread: false },
+    { id: 4, icon: AlertCircle,  iconBg: "#fdf1cf", iconColor: "#a37a12", text: "Make sure to add a pickup address to every donation listing.",                               time: "2 days ago",   unread: false },
+    { id: 5, icon: Users,        iconBg: "#ece4fb", iconColor: "#6a1b9a", text: "5 NGOs in your area are actively looking for food donations.",                               time: "3 days ago",   unread: false },
+  ];
+
+  const [notifications, setNotifications] = useState(INITIAL);
 
   const markAllRead = () =>
     setNotifications((prev) => prev.map((n) => ({ ...n, unread: false })));

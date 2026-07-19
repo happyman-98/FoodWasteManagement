@@ -1,0 +1,348 @@
+/* Farmer.css — building blocks specific to the Farmer portal:
+   "My Listings" (card-per-listing layout + inline edit row) and
+   "Upload Harvest" (dropzone + form).
+   Rounded/pill + animation language matches the shared Forms.css
+   (an-fadeUp / an-scaleIn / an-popIn keyframes assumed defined in Theme.css). */
+
+/* =====================================================
+   My Listings — card list
+   ===================================================== */
+
+.listing-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.listing-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg, 1.25rem);
+  padding: 1rem 1.25rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  animation: an-fadeUp 0.4s ease both;
+}
+
+.listing-card:nth-child(1) { animation-delay: 0.05s; }
+.listing-card:nth-child(2) { animation-delay: 0.1s; }
+.listing-card:nth-child(3) { animation-delay: 0.15s; }
+.listing-card:nth-child(4) { animation-delay: 0.2s; }
+.listing-card:nth-child(n+5) { animation-delay: 0.25s; }
+
+.listing-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+  border-color: var(--primary);
+}
+
+.listing-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.listing-card-title {
+  font-weight: var(--font-weight-medium);
+  margin: 0 0 0.15rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.listing-card-sub {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted-foreground);
+}
+
+.listing-card-trailing {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  flex-shrink: 0;
+}
+
+.listing-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+/* ---------- Inline edit mode ---------- */
+
+.listing-edit-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 0.75rem;
+}
+
+@media (max-width: 720px) {
+  .listing-edit-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.listing-edit-grid input {
+  width: 100%;
+  border: 1px solid transparent;
+  background: var(--input-background);
+  border-radius: 999px;
+  padding: 0.55rem 1rem;
+  font-size: 0.9rem;
+  color: var(--foreground);
+  outline: none;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: box-shadow 0.15s ease;
+}
+
+.listing-edit-grid input:focus {
+  outline: 2px solid var(--ring);
+  outline-offset: 1px;
+}
+
+.listing-card-actions .icon-btn--confirm {
+  color: var(--primary);
+}
+
+.listing-card-actions .icon-btn--cancel {
+  color: var(--muted-foreground);
+}
+
+.icon-btn--confirm,
+.icon-btn--cancel {
+  transition: transform 0.15s ease;
+}
+
+.icon-btn--confirm:hover,
+.icon-btn--cancel:hover {
+  transform: scale(1.15);
+}
+
+/* ---------- Empty state ---------- */
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 3rem 1rem;
+  color: var(--muted-foreground);
+  text-align: center;
+  animation: an-fadeUp 0.4s ease both;
+}
+
+.empty-state svg {
+  color: var(--border);
+  margin-bottom: 0.25rem;
+  animation: an-popIn 0.5s 0.1s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* =====================================================
+   Upload Harvest — form + dropzone
+   ===================================================== */
+
+.form-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg, 1.25rem);
+  padding: 1.75rem;
+  max-width: 720px;
+  animation: an-fadeUp 0.4s ease both;
+}
+
+.form-success-banner {
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  color: var(--primary);
+  border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent);
+  border-radius: 999px;
+  padding: 0.65rem 1.1rem;
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-medium);
+  animation: an-popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* ---------- Dropzone ---------- */
+
+.dropzone {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius, 1rem);
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  background: transparent;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.2s ease;
+  animation: an-scaleIn 0.4s 0.1s ease both;
+}
+
+.dropzone:hover,
+.dropzone:focus-within {
+  background: var(--muted);
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.dropzone-icon {
+  color: var(--muted-foreground);
+  transition: color 0.15s ease;
+}
+
+.dropzone:hover .dropzone-icon {
+  color: var(--primary);
+}
+
+.dropzone-title {
+  font-size: var(--text-base);
+  color: var(--foreground);
+}
+
+.dropzone-title b {
+  color: var(--primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.dropzone input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.dropzone-preview-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.25rem;
+}
+
+.dropzone-preview-chip {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.3rem 0.85rem;
+  font-size: 0.8rem;
+  color: var(--foreground);
+  animation: an-popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* ---------- Form grid ---------- */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 640px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  animation: an-fadeUp 0.4s ease both;
+}
+
+.form-field:nth-child(1) { animation-delay: 0.08s; }
+.form-field:nth-child(2) { animation-delay: 0.14s; }
+.form-field:nth-child(3) { animation-delay: 0.2s; }
+.form-field:nth-child(4) { animation-delay: 0.26s; }
+.form-field:nth-child(5) { animation-delay: 0.32s; }
+
+.form-field--full {
+  grid-column: 1 / -1;
+}
+
+.form-field label {
+  font-size: 0.9rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--foreground);
+}
+
+.form-field input,
+.form-field textarea {
+  width: 100%;
+  border: none;
+  background: var(--input-background);
+  border-radius: 999px;
+  padding: 0.7rem 1rem;
+  font-size: var(--text-base);
+  color: var(--foreground);
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: box-shadow 0.15s ease;
+}
+
+.form-field textarea {
+  border-radius: 1rem;
+  resize: vertical;
+  min-height: 4.5rem;
+}
+
+.form-field input::placeholder,
+.form-field textarea::placeholder {
+  color: var(--muted-foreground);
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+  outline: 2px solid var(--ring);
+  outline-offset: 1px;
+}
+
+.form-error-text {
+  font-size: 0.78rem;
+  color: var(--destructive);
+  animation: an-fadeUp 0.25s ease both;
+}
+
+/* ---------- Submit button ---------- */
+
+.form-submit-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: none;
+  border-radius: 999px;
+  padding: 0.85rem 1rem;
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--primary-foreground);
+  background: var(--primary);
+  cursor: pointer;
+  transition: filter 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-submit-btn:hover:not(:disabled) {
+  filter: brightness(1.05);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.form-submit-btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+.form-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

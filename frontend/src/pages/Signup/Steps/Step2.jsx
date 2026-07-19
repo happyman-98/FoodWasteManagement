@@ -9,12 +9,11 @@ const ROLES = {
 };
 
 export default function Step2({
-  data,
+  data = {},
   updateForm,
   nextStep,
   prevStep,
 }) {
-
   const phoneDigits = (data.phone || "").replace(/\D/g, "");
 
   const sharedValid =
@@ -51,13 +50,12 @@ export default function Step2({
       {/* Individual Donor */}
       {data.role === ROLES.DONOR && (
         <div className="form-grid">
-
           <div className="form-group">
             <label>First Name</label>
             <input
               type="text"
               placeholder="e.g. Ananya"
-              value={data.firstName}
+              value={data.firstName || ""}
               onChange={(e) => updateForm("firstName", e.target.value)}
             />
           </div>
@@ -67,11 +65,10 @@ export default function Step2({
             <input
               type="text"
               placeholder="e.g. Krishnan"
-              value={data.lastName}
+              value={data.lastName || ""}
               onChange={(e) => updateForm("lastName", e.target.value)}
             />
           </div>
-
         </div>
       )}
 
@@ -83,7 +80,7 @@ export default function Step2({
             <input
               type="text"
               placeholder="e.g. Spice Garden Restaurant"
-              value={data.businessName}
+              value={data.businessName || ""}
               onChange={(e) => updateForm("businessName", e.target.value)}
             />
           </div>
@@ -93,7 +90,7 @@ export default function Step2({
             <input
               type="text"
               placeholder="e.g. 12724999000543"
-              value={data.fssaiNumber}
+              value={data.fssaiNumber || ""}
               onChange={(e) => updateForm("fssaiNumber", e.target.value)}
             />
           </div>
@@ -102,15 +99,27 @@ export default function Step2({
 
       {/* Farmer */}
       {data.role === ROLES.FARMER && (
-        <div className="form-group">
-          <label>Farm Name</label>
-          <input
-            type="text"
-            placeholder="e.g. Green Acres Farm"
-            value={data.farmName}
-            onChange={(e) => updateForm("farmName", e.target.value)}
-          />
-        </div>
+        <>
+          <div className="form-group">
+            <label>Farm Name</label>
+            <input
+              type="text"
+              placeholder="e.g. Green Acres Farm"
+              value={data.farmName || ""}
+              onChange={(e) => updateForm("farmName", e.target.value)}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Farm Registration/License No. (optional)</label>
+            <input
+              type="text"
+              placeholder="e.g. FARM-2024-XXXX"
+              value={data.farmLicenseNumber || ""}
+              onChange={(e) => updateForm("farmLicenseNumber", e.target.value)}
+            />
+          </div>
+        </>
       )}
 
       {/* NGO / Organisation */}
@@ -121,7 +130,7 @@ export default function Step2({
             <input
               type="text"
               placeholder="e.g. Helping Hands Trust"
-              value={data.orgName}
+              value={data.orgName || ""}
               onChange={(e) => updateForm("orgName", e.target.value)}
             />
           </div>
@@ -131,7 +140,7 @@ export default function Step2({
             <input
               type="text"
               placeholder="e.g. NGO-2024-XXXX"
-              value={data.ngoRegNumber}
+              value={data.ngoRegNumber || ""}
               onChange={(e) => updateForm("ngoRegNumber", e.target.value)}
             />
           </div>
@@ -144,7 +153,7 @@ export default function Step2({
         <input
           type="email"
           placeholder="you@example.com"
-          value={data.email}
+          value={data.email || ""}
           onChange={(e) => updateForm("email", e.target.value)}
         />
       </div>
@@ -152,7 +161,7 @@ export default function Step2({
       <div className="form-group">
         <label>Phone Number</label>
         <PhoneInput
-          value={data.phone}
+          value={data.phone || ""}
           onChange={(val) => updateForm("phone", val)}
         />
       </div>
@@ -162,13 +171,12 @@ export default function Step2({
         <input
           type="text"
           placeholder="e.g. Koramangala, Bangalore"
-          value={data.city}
+          value={data.city || ""}
           onChange={(e) => updateForm("city", e.target.value)}
         />
       </div>
 
       <div className="button-row">
-
         <button
           type="button"
           className="back-btn"
@@ -186,7 +194,6 @@ export default function Step2({
           Continue
           <FaArrowRight />
         </button>
-
       </div>
     </>
   );

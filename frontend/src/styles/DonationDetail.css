@@ -1,0 +1,201 @@
+/* =============================================
+   DonationDetail.css
+   @import "../../styles/animations.css" first
+   ============================================= */
+
+/* ---------- Header ---------- */
+.dd-header { animation: an-fadeUp 0.45s ease both; }
+
+.dd-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.42rem 1rem;
+  border: 1.5px solid var(--border, #e2e8f0);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted-foreground, #64748b);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.15s;
+  margin-bottom: 0.85rem;
+}
+.dd-back-btn:hover {
+  background: var(--secondary, #f1f5f9);
+  border-color: var(--primary, #22c55e);
+  color: var(--primary, #22c55e);
+  transform: translateX(-3px);
+}
+
+.dd-title {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: var(--foreground, #0f172a);
+  margin: 0 0 0.25rem;
+  line-height: 1.25;
+}
+
+.dd-meta {
+  font-size: 0.82rem;
+  color: var(--muted-foreground, #94a3b8);
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+/* ---------- Main Panel ---------- */
+.dd-panel {
+  background: var(--card, #ffffff);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 16px;
+  overflow: hidden;
+  animation: an-scaleIn 0.45s 0.1s ease both;
+}
+
+/* ---------- Two-column layout ---------- */
+.dd-body {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 768px) {
+  .dd-body { grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); }
+}
+
+/* ---------- Image section ---------- */
+.dd-image-section {
+  background: var(--secondary, #f8fafc);
+  border-right: 1px solid var(--border, #e2e8f0);
+  padding: 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+@media (max-width: 767px) {
+  .dd-image-section {
+    border-right: none;
+    border-bottom: 1px solid var(--border, #e2e8f0);
+    padding: 1.25rem;
+  }
+}
+
+/* ── Image grid variants (data-count drives layout) ── */
+
+/* 1 — full portrait */
+.dd-image-grid[data-count="1"] { width: 100%; }
+.dd-image-grid[data-count="1"] img {
+  width: 100%; height: 340px; object-fit: cover; border-radius: 12px;
+  animation: an-fadeIn 0.5s 0.2s ease both;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.dd-image-grid[data-count="1"] img:hover { transform: scale(1.02); box-shadow: 0 12px 32px rgba(0,0,0,.12); }
+
+/* 2 — side-by-side */
+.dd-image-grid[data-count="2"] { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; width: 100%; }
+.dd-image-grid[data-count="2"] img { width: 100%; height: 260px; object-fit: cover; border-radius: 10px; transition: transform 0.25s ease, box-shadow 0.25s ease; }
+.dd-image-grid[data-count="2"] img:nth-child(1) { animation: an-fadeIn 0.5s 0.15s ease both; }
+.dd-image-grid[data-count="2"] img:nth-child(2) { animation: an-fadeIn 0.5s 0.28s ease both; }
+.dd-image-grid[data-count="2"] img:hover { transform: scale(1.03); box-shadow: 0 8px 24px rgba(0,0,0,.1); }
+
+/* 3 — large left + two stacked right */
+.dd-image-grid[data-count="3"] { display: grid; grid-template-columns: 1.4fr 1fr; grid-template-rows: 1fr 1fr; gap: 0.6rem; width: 100%; }
+.dd-image-grid[data-count="3"] img:nth-child(1) { grid-row: 1/3; height: 100%; min-height: 260px; width: 100%; object-fit: cover; border-radius: 10px; animation: an-fadeIn 0.5s 0.15s ease both; }
+.dd-image-grid[data-count="3"] img:nth-child(2),
+.dd-image-grid[data-count="3"] img:nth-child(3) { width: 100%; height: 126px; object-fit: cover; border-radius: 10px; }
+.dd-image-grid[data-count="3"] img:nth-child(2) { animation: an-fadeIn 0.5s 0.25s ease both; }
+.dd-image-grid[data-count="3"] img:nth-child(3) { animation: an-fadeIn 0.5s 0.35s ease both; }
+.dd-image-grid[data-count="3"] img { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+.dd-image-grid[data-count="3"] img:hover { transform: scale(1.03); box-shadow: 0 8px 24px rgba(0,0,0,.1); }
+
+/* 4 — 2×2 grid */
+.dd-image-grid[data-count="4"] { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 0.6rem; width: 100%; }
+.dd-image-grid[data-count="4"] img { width: 100%; height: 160px; object-fit: cover; border-radius: 10px; transition: transform 0.25s ease, box-shadow 0.25s ease; }
+.dd-image-grid[data-count="4"] img:nth-child(1) { animation: an-fadeIn 0.5s 0.12s ease both; }
+.dd-image-grid[data-count="4"] img:nth-child(2) { animation: an-fadeIn 0.5s 0.20s ease both; }
+.dd-image-grid[data-count="4"] img:nth-child(3) { animation: an-fadeIn 0.5s 0.28s ease both; }
+.dd-image-grid[data-count="4"] img:nth-child(4) { animation: an-fadeIn 0.5s 0.36s ease both; }
+.dd-image-grid[data-count="4"] img:hover { transform: scale(1.04); box-shadow: 0 8px 24px rgba(0,0,0,.1); }
+
+/* 5 — wide hero + small hero + 3 thumbs */
+.dd-image-grid[data-count="5"] { display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: auto auto; gap: 0.6rem; width: 100%; }
+.dd-image-grid[data-count="5"] img:nth-child(1) { grid-column: 1/3; height: 200px; width: 100%; object-fit: cover; border-radius: 10px; animation: an-fadeIn 0.5s 0.12s ease both; }
+.dd-image-grid[data-count="5"] img:nth-child(2) { height: 200px; width: 100%; object-fit: cover; border-radius: 10px; animation: an-fadeIn 0.5s 0.22s ease both; }
+.dd-image-grid[data-count="5"] img:nth-child(3),
+.dd-image-grid[data-count="5"] img:nth-child(4),
+.dd-image-grid[data-count="5"] img:nth-child(5) { height: 110px; width: 100%; object-fit: cover; border-radius: 10px; }
+.dd-image-grid[data-count="5"] img:nth-child(3) { animation: an-fadeIn 0.5s 0.30s ease both; }
+.dd-image-grid[data-count="5"] img:nth-child(4) { animation: an-fadeIn 0.5s 0.38s ease both; }
+.dd-image-grid[data-count="5"] img:nth-child(5) { animation: an-fadeIn 0.5s 0.46s ease both; }
+.dd-image-grid[data-count="5"] img { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+.dd-image-grid[data-count="5"] img:hover { transform: scale(1.04); box-shadow: 0 8px 24px rgba(0,0,0,.1); }
+
+/* No-image placeholder */
+.dd-no-image {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 0.75rem; width: 100%; min-height: 220px;
+  color: var(--muted-foreground, #94a3b8); font-size: 0.85rem;
+}
+.dd-no-image svg { opacity: 0.35; }
+
+/* ---------- Content section ---------- */
+.dd-content-section {
+  padding: 2rem 1.75rem;
+  display: flex; flex-direction: column; gap: 1.5rem;
+  animation: an-fadeUp 0.5s 0.2s ease both;
+}
+
+.dd-badge-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+
+.dd-description { font-size: 0.92rem; line-height: 1.7; color: var(--muted-foreground, #475569); margin: 0; }
+
+/* ---------- Stat cards ---------- */
+.dd-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+
+.dd-stat-card {
+  background: var(--secondary, #f8fafc);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 12px; padding: 0.9rem 1rem;
+  display: flex; flex-direction: column; gap: 0.35rem;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+  animation: an-fadeUp 0.4s ease both;
+}
+.dd-stat-card:nth-child(1) { animation-delay: 0.25s; }
+.dd-stat-card:nth-child(2) { animation-delay: 0.32s; }
+.dd-stat-card:nth-child(3) { animation-delay: 0.39s; }
+.dd-stat-card:nth-child(4) { animation-delay: 0.46s; }
+.dd-stat-card:hover {
+  border-color: var(--primary, #22c55e);
+  box-shadow: 0 4px 16px rgba(34,197,94,.08);
+  transform: translateY(-2px);
+}
+
+.dd-stat-icon-val { display: flex; align-items: center; gap: 0.4rem; font-size: 0.88rem; font-weight: 600; color: var(--foreground, #0f172a); }
+.dd-stat-icon-val svg { color: var(--primary, #22c55e); flex-shrink: 0; }
+.dd-stat-label { font-size: 0.72rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted-foreground, #94a3b8); }
+
+/* ---------- Claimed By ---------- */
+.dd-claimed-box {
+  background: var(--secondary, #f8fafc);
+  border: 1px solid var(--border, #e2e8f0);
+  border-left: 3px solid var(--primary, #22c55e);
+  border-radius: 0 10px 10px 0;
+  padding: 1rem 1.1rem;
+  animation: an-fadeUp 0.4s 0.5s ease both;
+}
+.dd-claimed-box h3 { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted-foreground, #94a3b8); margin: 0 0 0.35rem; }
+.dd-claimed-box p  { font-size: 0.95rem; font-weight: 600; color: var(--foreground, #0f172a); margin: 0; }
+
+/* ---------- Skeleton ---------- */
+.dd-skeleton {
+  background: linear-gradient(90deg, var(--secondary,#f1f5f9) 25%, var(--border,#e2e8f0) 50%, var(--secondary,#f1f5f9) 75%);
+  background-size: 600px 100%;
+  animation: an-shimmer 1.4s infinite linear;
+  border-radius: 8px;
+}
+
+/* ---------- Error / Empty ---------- */
+.dd-error {
+  padding: 1rem 1.25rem; background: #fff1f2; border: 1px solid #fecdd3;
+  border-radius: 10px; color: #e11d48; font-size: 0.88rem;
+  animation: an-fadeUp 0.35s ease both;
+}
+.dd-empty { padding: 3rem 1.5rem; text-align: center; color: var(--muted-foreground, #94a3b8); font-size: 0.9rem; }

@@ -1,21 +1,9 @@
 import React, { useState } from "react";
-import { Leaf, Menu, X } from "lucide-react";
+import { Leaf, Menu, X, Home } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { ROLE_CONFIG } from "./sidebarConfig";
 import "./Sidebar.css";
 
-/**
- * ShareCycle role-based dashboard sidebar.
- *
- * <Sidebar
- *   role="donor"                 // "donor" | "restaurant" | "farmer" | "ngo" | "admin"
- *   activeKey="dashboard"        // key of the currently active nav item
- *   onNavigate={(key) => ...}    // called with the item's key on click
- *   onLogout={() => ...}
- * />
- *
- * onNavigate doesn't assume react-router — wire it to whatever routing
- * your app uses (navigate(key), setActivePage(key), etc).
- */
 export default function Sidebar({
   role = "donor",
   activeKey,
@@ -23,11 +11,17 @@ export default function Sidebar({
   onLogout = () => {},
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const navigate = useNavigate();
   const config = ROLE_CONFIG[role] ?? ROLE_CONFIG.donor;
 
   const handleNavClick = (key) => {
     onNavigate(key);
     setMobileOpen(false);
+  };
+
+  const handleHomeClick = () => {
+    setMobileOpen(false);
+    navigate("/");
   };
 
   return (
@@ -92,6 +86,15 @@ export default function Sidebar({
         </nav>
 
         <div className="sidebar-footer">
+          <button
+            type="button"
+            className="sidebar-link"
+            onClick={handleHomeClick}
+          >
+            <Home size={18} strokeWidth={2} className="sidebar-link-icon" />
+            <span>Back to Home</span>
+          </button>
+
           <button
             type="button"
             className="sidebar-link sidebar-logout"

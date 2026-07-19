@@ -1,127 +1,229 @@
 import React from "react";
-import { Gift, Package, Heart, Leaf, UtensilsCrossed, Search, Truck, CheckCircle2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import {
+  Gift, Package, Heart, Leaf,
+  UtensilsCrossed, Search, Truck, CheckCircle2,
+} from "lucide-react";
 import Sidebar from "../../components/SideBar/Sidebar";
+import { useAuth } from "../../context/AuthContext";
+import { useDonations } from "../../hooks/useDonations";
+
+
+import "../../styles/animations.css";
 import "../../styles/Dashboard.css";
 
+/* ── Constants ─────────────────────────────────── */
 const QUICK_ACTIONS = [
-  { key: "donate-food", label: "Donate Food", icon: UtensilsCrossed, variant: "green" },
-  { key: "donate-items", label: "Donate Items", icon: Package, variant: "orange" },
-  { key: "find-donations", label: "Find Donations", icon: Search, variant: "blue" },
-  { key: "track-orders", label: "Track Orders", icon: Truck, variant: "purple" },
+  { key: "donate-food",    label: "Donate Food",    icon: UtensilsCrossed, variant: "green"  },
+  { key: "donate-items",   label: "Donate Items",   icon: Package,         variant: "orange" },
+  { key: "find-donations", label: "Find Donations", icon: Search,          variant: "blue"   },
+  { key: "track-orders",   label: "Track Orders",   icon: Truck,           variant: "purple" },
 ];
 
-const STATS = [
-  { icon: Gift, variant: "green", meta: "+12 this month", value: "82", label: "Total Donations" },
-  { icon: Package, variant: "orange", meta: "+5 this month", value: "34", label: "Items Shared" },
-  { icon: Heart, variant: "blue", meta: "estimated impact", value: "210", label: "Families Helped" },
-  { icon: Leaf, variant: "purple", meta: "lifetime", value: "128", label: "CO₂ Saved (kg)" },
-];
-
-const RECENT_DONATIONS = [
-  { id: "#D2401", donation: "Cooked Biryani – 40 portions", date: "Jul 6, 2026", status: "Delivered" },
-  { id: "#D2398", donation: "Winter Jackets – 12 pcs", date: "Jul 4, 2026", status: "Picked Up" },
-];
-
-const NOTIFICATIONS = [
-  { text: "Your food donation was picked up by Seva NGO", time: "2h ago" },
-  { text: "New donation request for your listing", time: "5h ago" },
-];
+const ROUTE_MAP = {
+  "dashboard":      "/doner/dashboard",
+  "donate-food":    "/doner/donate-food",
+  "donate-items":   "/doner/donate-items",
+  "my-donations":   "/doner/my-donations",
+  "notifications":  "/doner/notifications",
+  "profile":        "/doner/profile",
+  "find-donations": "/ngo/browse-donations",
+  "track-orders":   "/doner/my-donations",
+};
 
 function badgeClass(status) {
-  if (status === "Delivered") return "badge badge--delivered";
-  if (status === "Picked Up") return "badge badge--picked-up";
-  return "badge";
+  const map = {
+    "Delivered":  "badge badge--delivered",
+    "Picked Up":  "badge badge--picked-up",
+    "Pending":    "badge badge--pending",
+    "Cancelled":  "badge badge--cancelled",
+    "Active":     "badge badge--active",
+  };
+  return map[status] ?? "badge";
 }
 
-export default function DonorDashboard({ userName = "Ananya Krishnan", onNavigate = () => {}, onLogout = () => {} }) {
+export default function DonorDashboard() {
+  const { user, logout } = useAuth();
+  const { donations, loading } = useDonations();
+  const navigate = useNavigate();
+
+  const onNavigate = (key) => navigate(ROUTE_MAP[key] || "/");
+  const onLogout   = async () => { await logout(); navigate("/login"); };
+
+  const recent = donations.slice(0, 3);
+
+  const thisMonth = donations.filter(
+    (d) => new Date(d.createdAt).getMonth() === new Date().getMonth()
+  ).length;
+
+  const stats = [
+    {
+      icon: Gift,    variant: "green",
+      meta: "all time",         value: donations.length,
+      label: "Total Donations",
+    },
+    {
+      icon: Package, variant: "orange",
+      meta: "this month",       value: thisMonth,
+      label: "This Month",
+    },
+    {
+      icon: Heart,   variant: "blue",
+      meta: "estimated impact", value: donations.length * 3,
+      label: "Families Helped",
+    },
+    {
+      icon: Leaf,    variant: "purple",
+      meta: "lifetime",         value: donations.length * 2,
+      label: "CO₂ Saved (kg)",
+    },
+  ];
+
   return (
     <div className="dashboard-layout">
-      <Sidebar role="donor" activeKey="dashboard" onNavigate={onNavigate} onLogout={onLogout} />
+      <Sidebar
+        role="donor"
+        activeKey="dashboard"
+        onNavigate={onNavigate}
+        onLogout={onLogout}
+      />
 
       <main className="dashboard-main">
-        <div className="welcome-banner">
-          <div>
-            <p className="eyebrow">Welcome back,</p>
-            <h2>{userName} 👋</h2>
-            <p className="sub">You've donated 18 times this month — amazing work!</p>
+
+        {/* ── Welcome Banner ── */}
+        <div className="db-banner">
+          <div className="db-banner-text">
+            <p className="db-banner-eyebrow">Welcome back,</p>
+            <h2 className="db-banner-name">{user?.name || "Donor"} 👋</h2>
+            <p className="db-banner-sub">
+              You've donated {donations.length} time{donations.length !== 1 ? "s" : ""} — amazing work!
+            </p>
           </div>
           <img
-            className="welcome-banner-avatar"
-            src="https://i.pravatar.cc/112?img=47"
-            alt=""
+            className="db-banner-avatar"
+            src={user?.avatar || "/default-avatar.png"||"https://i.pravatar.cc/144?img=4"}
+            alt={user?.name || "Donor avatar"}
           />
         </div>
 
-        <h3 className="section-title">Quick Actions</h3>
-        <div className="quick-actions-grid">
+        {/* ── Quick Actions ── */}
+        <h3 className="db-section-title">Quick Actions</h3>
+        <div className="db-actions-grid">
           {QUICK_ACTIONS.map(({ key, label, icon: Icon, variant }) => (
-            <button key={key} className={`quick-action-card quick-action-card--${variant}`} onClick={() => onNavigate(key)}>
-              <Icon size={26} strokeWidth={2} />
+            <button
+              key={key}
+              className={`db-action-btn db-action-btn--${variant}`}
+              onClick={() => onNavigate(key)}
+              aria-label={label}
+            >
+              <span className="db-action-icon">
+                <Icon size={22} strokeWidth={2} />
+              </span>
               <span>{label}</span>
             </button>
           ))}
         </div>
 
-        <div className="stat-grid">
-          {STATS.map(({ icon: Icon, variant, meta, value, label }) => (
-            <div className="stat-card" key={label}>
-              <div className="stat-card-top">
-                <span className={`stat-card-icon stat-card-icon--${variant}`}>
-                  <Icon size={16} />
+        {/* ── Stat Cards ── */}
+        <div className="db-stat-grid">
+          {stats.map(({ icon: Icon, variant, meta, value, label }) => (
+            <div className={`db-stat-card db-stat-card--${variant}`} key={label}>
+              <div className="db-stat-top">
+                <span className={`db-stat-icon db-stat-icon--${variant}`}>
+                  <Icon size={17} />
                 </span>
-                <span className="stat-card-meta">{meta}</span>
+                <span className="db-stat-meta">{meta}</span>
               </div>
-              <div className="stat-card-value">{value}</div>
-              <div className="stat-card-label">{label}</div>
+              <div className="db-stat-value">
+                {loading ? "—" : value}
+              </div>
+              <div className="db-stat-label">{label}</div>
             </div>
           ))}
         </div>
 
-        <div className="panel-grid">
-          <div className="panel">
-            <div className="panel-header">
+        {/* ── Panel Grid ── */}
+        <div className="db-panel-grid">
+
+          {/* Recent Donations */}
+          <div className="db-panel">
+            <div className="db-panel-header">
               <h3>Recent Donations</h3>
-              <button className="panel-link">View All</button>
+              <button
+                className="db-panel-link"
+                onClick={() => navigate("/doner/my-donations")}
+              >
+                View all →
+              </button>
             </div>
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Donation</th>
-                  <th>Date</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {RECENT_DONATIONS.map((row) => (
-                  <tr key={row.id}>
-                    <td>{row.id}</td>
-                    <td style={{ fontWeight: 600 }}>{row.donation}</td>
-                    <td>{row.date}</td>
-                    <td><span className={badgeClass(row.status)}>{row.status}</span></td>
+
+            {loading ? (
+              <p className="db-loading">Loading…</p>
+            ) : recent.length === 0 ? (
+              <p className="db-empty">
+                No donations yet — start by donating food or items!
+              </p>
+            ) : (
+              <table className="db-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Donation</th>
+                    <th>Date</th>
+                    <th>Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {recent.map((row) => (
+                    <tr
+                      key={row._id}
+                      style={{ cursor: "pointer" }}
+                      onClick={() => navigate(`/doner/donation/${row._id}`)}
+                    >
+                      <td>
+                        <span className="db-table-id">
+                          #{row._id.slice(-5).toUpperCase()}
+                        </span>
+                      </td>
+                      <td className="db-table-title">{row.title}</td>
+                      <td>
+                        {new Date(row.createdAt).toLocaleDateString("en-IN", {
+                          day: "numeric", month: "short", year: "numeric",
+                        })}
+                      </td>
+                      <td>
+                        <span className={badgeClass(row.status)}>{row.status}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
 
-          <div className="panel">
-            <div className="panel-header">
+          {/* Notifications */}
+          <div className="db-panel">
+            <div className="db-panel-header">
               <h3>Notifications</h3>
-              <span className="notif-badge">{NOTIFICATIONS.length} new</span>
             </div>
-            {NOTIFICATIONS.map((n, i) => (
-              <div className="list-item" key={i}>
-                <span className="list-item-icon" style={{ background: "#dcf3de", color: "#2e7d32" }}>
-                  <CheckCircle2 size={18} />
-                </span>
-                <div className="list-item-body">
-                  <p className="list-item-title" style={{ fontWeight: 400 }}>{n.text}</p>
-                  <p className="list-item-sub">{n.time}</p>
-                </div>
+
+            <div className="db-notif-item">
+              <span
+                className="db-notif-icon"
+                style={{ background: "#dcf3de", color: "#2e7d32" }}
+              >
+                <CheckCircle2 size={18} />
+              </span>
+              <div>
+                <p className="db-notif-title">
+                  Welcome to ShareCycle, {user?.name?.split(" ")[0] || "there"}!
+                  Start making a difference.
+                </p>
+                <p className="db-notif-time">Just now</p>
               </div>
-            ))}
+            </div>
           </div>
+
         </div>
       </main>
     </div>

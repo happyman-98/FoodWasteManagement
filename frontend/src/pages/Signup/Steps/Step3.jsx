@@ -5,6 +5,8 @@ export default function Step3({
   data,
   updateForm,
   prevStep,
+  onSubmit,
+  loading
 }) {
 
   const isValid =
@@ -13,13 +15,9 @@ export default function Step3({
     data.password === data.confirmPassword &&
     data.terms;
 
-  const handleSubmit = () => {
-
-    if (!isValid) return;
-
-    // TODO: hook this up to your signup API call
-    console.log("Creating account with:", data);
-
+  const handleFormSubmit = () => {
+    if (!isValid || loading) return;
+    onSubmit(); // Executes actual registration in Signup.jsx
   };
 
   return (
@@ -73,11 +71,11 @@ export default function Step3({
       </label>
 
       <div className="button-row">
-
         <button
           type="button"
           className="back-btn"
           onClick={prevStep}
+          disabled={loading}
         >
           Back
         </button>
@@ -85,13 +83,12 @@ export default function Step3({
         <button
           type="button"
           className="primary-btn"
-          disabled={!isValid}
-          onClick={handleSubmit}
+          disabled={!isValid || loading}
+          onClick={handleFormSubmit}
         >
           <FaLeaf />
-          Create My Account
+          {loading ? "Creating Account..." : "Create My Account"}
         </button>
-
       </div>
     </>
   );

@@ -1,28 +1,56 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/SideBar/Sidebar";
+import { useAuth } from "../../context/AuthContext";
+import { updateNgoProfile } from "../../api/ngo";
 import "../../styles/Dashboard.css";
+import "../../styles/ngo-dashboard-shared.css";
 
-// Mirrors GET/PUT /api/ngo/profile
-const DEFAULT_PROFILE = {
-  ngoName: "Seva Humanitarian Trust",
-  registrationNumber: "NGO-2024-0482",
-  address: "14, CMH Road, Indiranagar, Bangalore 560038",
+
+export default function NgoSettings() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const onNavigate = (key) => navigate(`/ngo/${key}`);
+  const onLogout = async () => { await logout(); navigate("/login"); };
+
+  const [profile, setProfile] = useState({
+    name: "",
+    ngoRegNumber: "",
+    phone: "",
+    city: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+ useEffect(() => {
+  if (user) {
+    setProfile({
+      name: user.name || "",
+      ngoRegNumber: user.licenseNumber || "",
+      phone: user.phone || "",
+      city: user.city || "",
+    });
+  }
+}, [user]);
+
+  const handleChange = (field) => (e) =>
+    setProfile((prev) => ({ ...prev, [field]: e.target.value }));
+const handleSave = async () => {
+  setError("");
+  setSuccess("");
+  setLoading(true);
+  try {
+    await updateNgoProfile({ name: profile.name, phone: profile.phone, city: profile.city });
+    setSuccess("Profile saved successfully!");
+  } catch (err) {
+    setError(err.response?.data?.message || "Failed to save profile.");
+  } finally {
+    setLoading(false);
+  }
 };
-
-export default function NgoSettings({ onNavigate = () => {}, onLogout = () => {}, onSaveProfile = () => {} }) {
-  const [profile, setProfile] = useState(DEFAULT_PROFILE);
-  const [isSaving, setIsSaving] = useState(false);
-
-  function handleFieldChange(field, value) {
-    setProfile((prev) => ({ ...prev, [field]: value }));
-  }
-
-  async function handleSave() {
-    setIsSaving(true);
-    // Replace with: await fetch("/api/ngo/profile", { method: "PUT", body: JSON.stringify(profile) });
-    await onSaveProfile(profile);
-    setIsSaving(false);
-  }
 
   return (
     <div className="dashboard-layout">
@@ -39,39 +67,50 @@ export default function NgoSettings({ onNavigate = () => {}, onLogout = () => {}
         <div className="settings-card">
           <h3 style={{ margin: "0 0 1.25rem" }}>NGO Profile</h3>
 
+          {error && <p className="form-error">{error}</p>}
+          {success && <p className="form-success">{success}</p>}
+
           <div className="settings-grid">
             <div className="form-field">
-              <label htmlFor="ngoName">NGO Name</label>
+              <label>NGO Name</label>
               <input
-                id="ngoName"
                 type="text"
-                value={profile.ngoName}
-                onChange={(e) => handleFieldChange("ngoName", e.target.value)}
+                className="form-input"
+                value={profile.name}
+                onChange={handleChange("name")}
               />
             </div>
             <div className="form-field">
-              <label htmlFor="registrationNumber">Registration No.</label>
+              <label>Registration No.</label>
               <input
-                id="registrationNumber"
                 type="text"
-                value={profile.registrationNumber}
-                onChange={(e) => handleFieldChange("registrationNumber", e.target.value)}
+                className="form-input form-input--disabled"
+                value={profile.ngoRegNumber}
+                disabled
               />
             </div>
           </div>
 
-          <div className="form-field" style={{ marginBottom: "1.5rem" }}>
-            <label htmlFor="address">Address</label>
+          <div className="form-field" style={{ marginBottom: "1rem" }}>
+            <label>Phone</label>
             <input
-              id="address"
-              type="text"
-              value={profile.address}
-              onChange={(e) => handleFieldChange("address", e.target.value)}
+              type="tel"
+              value={profile.phone}
+              onChange={handleChange("phone")}
             />
           </div>
 
-          <button className="settings-submit-btn" onClick={handleSave} disabled={isSaving}>
-            {isSaving ? "Saving..." : "Save Profile"}
+          <div className="form-field" style={{ marginBottom: "1.5rem" }}>
+            <label>City / Address</label>
+            <input
+              type="text"
+              value={profile.city}
+              onChange={handleChange("city")}
+            />
+          </div>
+
+          <button className="settings-submit-btn" onClick={handleSave} disabled={loading}>
+            {loading ? "Saving..." : "Save Profile"}
           </button>
         </div>
       </main>
