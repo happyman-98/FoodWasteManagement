@@ -1,15 +1,29 @@
 import { useState, useRef, useEffect } from "react";
 import "./NavBar.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Leaf, Menu, X, ChevronDown, LayoutDashboard, UserRound, LogOut } from "lucide-react";
-import { ROLE_LABELS, getAvatarInfo } from "./authHelpers";
+import { USER_ROLES, ROLE_LABELS, getAvatarInfo } from "./authHelpers";
+
+// Mirrors ROLE_ROUTES in App.jsx — each role's dashboard/overview page.
+const DASHBOARD_ROUTES = {
+  [USER_ROLES.DONOR]: "/doner/dashboard",
+  [USER_ROLES.RESTAURANT]: "/restaurant/overview",
+  [USER_ROLES.FARMER]: "/farmer/overview",
+  [USER_ROLES.NGO]: "/ngo/overview",
+  [USER_ROLES.ADMIN]: "/admin/dashboard",
+};
+
+// Only donor currently has a dedicated profile page in App.jsx.
+// Add entries here as profile pages are built for other roles.
+const PROFILE_ROUTES = {
+  [USER_ROLES.DONOR]: "/doner/profile",
+};
 
 
 export default function Navbar({ user = null, isLoadingUser = false, onLogout = () => {} }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef(null);
-  const navigate = useNavigate();
 
   const navItems = [
     { to: "/", label: "Home" },
@@ -33,6 +47,8 @@ export default function Navbar({ user = null, isLoadingUser = false, onLogout = 
   const isLoggedIn = !isLoadingUser && !!user;
   const { displayName, initials, imageUrl } = getAvatarInfo(user);
   const roleLabel = user ? ROLE_LABELS[user.role] : "";
+  const dashboardPath = user ? DASHBOARD_ROUTES[user.role] : null;
+  const profilePath = user ? PROFILE_ROUTES[user.role] : null;
 
   function handleLogoutClick() {
     setProfileOpen(false);
@@ -40,10 +56,8 @@ export default function Navbar({ user = null, isLoadingUser = false, onLogout = 
     onLogout();
   }
 
-  function handleNavClick(e, to) {
-    e.preventDefault();
+  function handleNavClick() {
     setMenuOpen(false);
-    navigate("/login");
   }
 
   return (
@@ -67,7 +81,7 @@ export default function Navbar({ user = null, isLoadingUser = false, onLogout = 
             <Link
               key={item.to}
               to={item.to}
-              onClick={(e) => handleNavClick(e, item.to)}
+              onClick={handleNavClick}
             >
               {item.label}
             </Link>
@@ -77,7 +91,7 @@ export default function Navbar({ user = null, isLoadingUser = false, onLogout = 
         {/* Buttons / Account */}
         <div className="nav-buttons">
 
-          {isLoadingUser && <div className="avatar-skeleton" aria-hidden="true" />}
+          {isLoadingUser && <div className="navbar-avatar-skeleton" aria-hidden="true" />}
 
           {!isLoadingUser && !user && (
             <>
@@ -87,40 +101,48 @@ export default function Navbar({ user = null, isLoadingUser = false, onLogout = 
           )}
 
           {isLoggedIn && (
-            <div className="profile-menu" ref={profileRef}>
+            <div className="navbar-profile-menu" ref={profileRef}>
               <button
-                className="profile-trigger"
+                className={`navbar-profile-trigger ${user.role === USER_ROLES.FARMER ? "navbar-profile-trigger-farmer" : ""}`}
                 onClick={() => setProfileOpen((prev) => !prev)}
                 aria-haspopup="true"
                 aria-expanded={profileOpen}
                 aria-label={`${displayName} account menu`}
               >
-                <span className="profile-avatar">
-                  {imageUrl ? (
-                    <img src={imageUrl} alt="" className="profile-avatar-img" />
-                  ) : (
-                    <span className="profile-avatar-initials">{initials}</span>
-                  )}
-                </span>
-                <ChevronDown size={16} className={`profile-chevron ${profileOpen ? "profile-chevron-open" : ""}`} />
+                {user.role === USER_ROLES.FARMER ? (
+                  <span className="navbar-farm-name">{displayName}</span>
+                ) : (
+                  <span className="navbar-avatar">
+                    {imageUrl ? (
+                      <img src={imageUrl} alt="" className="navbar-avatar-img" />
+                    ) : (
+                      <span className="navbar-avatar-initials">{initials}</span>
+                    )}
+                  </span>
+                )}
+                <ChevronDown size={14} className={`navbar-profile-chevron ${profileOpen ? "navbar-profile-chevron-open" : ""}`} />
               </button>
 
               {profileOpen && (
-                <div className="profile-dropdown">
-                  <div className="profile-dropdown-header">
-                    <span className="profile-dropdown-name">{displayName}</span>
-                    <span className="profile-dropdown-role">{roleLabel}</span>
+                <div className="navbar-profile-dropdown">
+                  <div className="navbar-profile-dropdown-header">
+                    <span className="navbar-profile-dropdown-name">{displayName}</span>
+                    <span className="navbar-profile-dropdown-role">{roleLabel}</span>
                   </div>
 
-                  <Link to="/dashboard" className="profile-dropdown-link" onClick={() => setProfileOpen(false)}>
-                    <LayoutDashboard size={16} />
-                    Dashboard
-                  </Link>
-                  <Link to="/profile" className="profile-dropdown-link" onClick={() => setProfileOpen(false)}>
-                    <UserRound size={16} />
-                    Profile
-                  </Link>
-                  <button className="profile-dropdown-link profile-dropdown-logout" onClick={handleLogoutClick}>
+                  {dashboardPath && (
+                    <Link to={dashboardPath} className="navbar-profile-dropdown-link" onClick={() => setProfileOpen(false)}>
+                      <LayoutDashboard size={16} />
+                      Dashboard
+                    </Link>
+                  )}
+                  {profilePath && (
+                    <Link to={profilePath} className="navbar-profile-dropdown-link" onClick={() => setProfileOpen(false)}>
+                      <UserRound size={16} />
+                      Profile
+                    </Link>
+                  )}
+                  <button className="navbar-profile-dropdown-link navbar-profile-dropdown-logout" onClick={handleLogoutClick}>
                     <LogOut size={16} />
                     Logout
                   </button>
@@ -148,7 +170,7 @@ export default function Navbar({ user = null, isLoadingUser = false, onLogout = 
             <Link
               key={item.to}
               to={item.to}
-              onClick={(e) => handleNavClick(e, item.to)}
+              onClick={handleNavClick}
             >
               {item.label}
             </Link>

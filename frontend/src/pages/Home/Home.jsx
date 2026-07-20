@@ -5,10 +5,14 @@ import Donation from "../../components/Donation/Donation";
 import Uploads from "../../components/Uploads/Uploads";
 import DashboardCard from "../../components/DashboardCard/DashboardCard";
 import Footer from "../../components/Footer/Footer";
+import { useAuth } from "../../context/AuthContext";
+
 export default function Home() {
+  const { user, loading, logout } = useAuth();
+
   return (
     <>
-      <Navbar />
+      <Navbar user={user} isLoadingUser={loading} onLogout={logout} />
       <Hero />
       <Info/>
       <Donation/>

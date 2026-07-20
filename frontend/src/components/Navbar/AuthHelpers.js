@@ -30,7 +30,7 @@
  *                                    Organization / restaurant display name.
  *  farmName      string   REQUIRED for role "farmer".
  *                                    Farm display name.
- *  avatarUrl     string   OPTIONAL   Profile photo (donor) or logo (ngo /
+ *  avatar         string   OPTIONAL   Profile photo (donor) or logo (ngo /
  *                                    restaurant) image URL.
  *                                    - Recommended: square image, ≥128x128px,
  *                                      jpg/png/webp.
@@ -42,20 +42,27 @@
  *                                      circle from farmName. Remove the
  *                                      special-case in getAvatarInfo() below
  *                                      if you later want farmer logos too.
+ *                                    - IMPLEMENTATION NOTE: the actual field
+ *                                      returned by the backend and set by
+ *                                      Profile.jsx is `avatar`, not
+ *                                      `avatarUrl`. getAvatarInfo() below
+ *                                      reads `user.avatar` accordingly. If
+ *                                      you rename the backend field, update
+ *                                      both this doc and getAvatarInfo().
  *
  * Example payloads your login/auth endpoint should resolve to:
  *
  *   // Donor
- *   { id: "u_123", role: "donor", name: "Aditi Sharma", avatarUrl: "https://.../photo.jpg" }
+ *   { id: "u_123", role: "donor", name: "Aditi Sharma", avatar: "https://.../photo.jpg" }
  *
  *   // NGO
- *   { id: "ngo_45", role: "ngo", orgName: "Hope Foundation", avatarUrl: "https://.../logo.png" }
+ *   { id: "ngo_45", role: "ngo", orgName: "Hope Foundation", avatar: "https://.../logo.png" }
  *
  *   // Farmer
  *   { id: "farm_9", role: "farmer", farmName: "Green Valley Farm" }
  *
  *   // Restaurant
- *   { id: "rest_7", role: "restaurant", orgName: "Spice Route Kitchen", avatarUrl: "https://.../logo.png" }
+ *   { id: "rest_7", role: "restaurant", orgName: "Spice Route Kitchen", avatar: "https://.../logo.png" }
  *
  * Other props the Navbar expects from the parent:
  * ----------------------------------------------------------------------------
@@ -78,6 +85,7 @@ export const USER_ROLES = {
   NGO: "ngo",
   FARMER: "farmer",
   RESTAURANT: "restaurant",
+  ADMIN: "admin",
 };
 
 export const ROLE_LABELS = {
@@ -85,6 +93,7 @@ export const ROLE_LABELS = {
   [USER_ROLES.NGO]: "NGO",
   [USER_ROLES.FARMER]: "Farmer",
   [USER_ROLES.RESTAURANT]: "Restaurant",
+  [USER_ROLES.ADMIN]: "Admin",
 };
 
 /**
@@ -99,6 +108,8 @@ export function getDisplayName(user) {
       return user.orgName || user.name || "Account";
     case USER_ROLES.FARMER:
       return user.farmName || user.name || "Account";
+    case USER_ROLES.ADMIN:
+      return user.name || "Admin";
     case USER_ROLES.DONOR:
     default:
       return user.name || "Account";
@@ -125,7 +136,6 @@ export function getAvatarInfo(user) {
 
   // Farmer accounts always render as a text circle from the farm name,
   // per product spec — image intentionally ignored even if provided.
-  const imageUrl = user?.role === USER_ROLES.FARMER ? null : user?.avatarUrl || null;
-
+  const imageUrl = user?.role === USER_ROLES.FARMER ? null : user?.avatar || null;
   return { displayName, initials, imageUrl };
 }
