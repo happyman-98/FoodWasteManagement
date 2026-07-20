@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import { Leaf, Menu, X, ChevronDown, LayoutDashboard, UserRound, LogOut } from "lucide-react";
 import { USER_ROLES, ROLE_LABELS, getAvatarInfo } from "./authHelpers";
 
-// Mirrors ROLE_ROUTES in App.jsx — each role's dashboard/overview page.
 const DASHBOARD_ROUTES = {
   [USER_ROLES.DONOR]: "/doner/dashboard",
   [USER_ROLES.RESTAURANT]: "/restaurant/overview",
@@ -13,8 +12,6 @@ const DASHBOARD_ROUTES = {
   [USER_ROLES.ADMIN]: "/admin/dashboard",
 };
 
-// Only donor currently has a dedicated profile page in App.jsx.
-// Add entries here as profile pages are built for other roles.
 const PROFILE_ROUTES = {
   [USER_ROLES.DONOR]: "/doner/profile",
 };
